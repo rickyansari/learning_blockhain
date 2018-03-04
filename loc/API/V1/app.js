@@ -4,7 +4,7 @@ const ganache = require('ganache-cli');
 const Web3 = require('web3'); //Gives constructor function used to get web3 instance.
 const provider = ganache.provider();
 const web3 = new Web3(provider);
-const { interface , bytecode } = require('../compile');
+const { interface , bytecode } = require('../../compile');
 
 let accounts;
 let inbox;
@@ -24,4 +24,4 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-app.listen(3000, () => console.log('Example app listening on port 3000!'))
+app.listen(3000, () => console.log('Express server listening on port 3000!'))

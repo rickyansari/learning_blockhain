@@ -44,7 +44,7 @@ contract LineOfCredit{
     storeDealDocument(deal_document);
   }
 
-  function addSellerBank(address seller_bank_addresss) public onlySeller{
+  function createSellerBank(address seller_bank_addresss) public onlySeller{
     seller_bank = seller_bank_addresss;
   }
 
@@ -57,23 +57,23 @@ contract LineOfCredit{
     LogDocumentProof(deal_document_hash);
   }
 
-   function goodsDispatched() public onlySeller{
-     status= "goods_dispatched";
+   function updateGoodsDispatched() public onlySeller{
+     status= "GoodsDispatched";
      LogStatusChange(status);
    }
 
-   function goodsReceived() public onlyBuyer{
-      status = "goods_received";
+   function updateGoodsReceived() public onlyBuyer{
+      status = "GoodsReceived";
       LogStatusChange(status);
    }
 
-   function debitedMoney() public onlyBuyerBank{
-      status = "amount_debited";
+   function updateMoneyTransferred() public onlyBuyerBank{
+      status = "MoneyTrasnferred";
       LogStatusChange(status);
    }
 
-   function creditedMoney() public onlySellerBank{
-      status = "amount_credited";
+   function updateMoneyReceived() public onlySellerBank{
+      status = "MoneyReceived";
       LogStatusChange(status);
    }
 }
