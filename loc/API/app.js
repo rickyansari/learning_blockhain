@@ -12,12 +12,11 @@ let inbox;
 deployContract =  async ()=>{
   accounts =  await web3.eth.getAccounts();
   inbox = await new web3.eth.Contract(JSON.parse(interface))
-    .deploy({data: bytecode, arguments:["hi there"]})
+    .deploy({data: bytecode})
     .send({from: accounts[0], gas:'1000000'})
 }
 
 deployContract();
-
 
 app.get('/', (req, res) => {
   console.log("First Account  Address", accounts[0]);
