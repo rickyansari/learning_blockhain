@@ -16,7 +16,7 @@ beforeEach(async ()=>{
   seller = accounts[2];
   seller_bank =  accounts[3];
   LOC = await new web3.eth.Contract(JSON.parse(interface))
-    .deploy({data: bytecode})
+    .deploy({data: bytecode, arguments:["PNB"]})
     .send({from: buyer_bank, gas:'1000000'})
 })
 
@@ -37,5 +37,9 @@ describe('deploy contract', ()=>{
     assert.equal(buyer_bank_address, accounts[0]);
   })
 
+  it('bank name initialized', async()=>{
+    let updated_status = await LOC.methods.status().call();
+    assert.equal(updated_status, "PNB");
+  })
 
 })
