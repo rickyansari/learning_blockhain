@@ -1,6 +1,5 @@
 const express = require('express')
 const app = express()
-const assert = require('assert');
 const ganache = require('ganache-cli');
 const Web3 = require('web3'); //Gives constructor function used to get web3 instance.
 const provider = ganache.provider();
@@ -22,7 +21,7 @@ deployContract();
 
 app.get('/', (req, res) => {
   console.log("First Account  Address", accounts[0]);
-  console.log("deployed contract", inbox);
+  console.log("deployed contract");
   res.send('Hello World!')
 })
 
