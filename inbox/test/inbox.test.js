@@ -1,10 +1,8 @@
 const assert = require('assert');
 const ganache = require('ganache-cli');
 const Web3 = require('web3'); //Gives constructor function used to get web3 instance.
-
-
-
-const web3 = new Web3(ganache.provider());
+const provider = ganache.provider();
+const web3 = new Web3(provider);
 const { interface , bytecode } = require('../compile');
 
 let accounts;
@@ -23,9 +21,18 @@ describe('deploy contract', ()=>{
     assert.ok(inbox.options.address);
   });
 
-  it('initialize with proper value', async ()=>{
-    inbox.op
+  it('initialize with default value', async ()=>{
+    const messsage = await inbox.methods.message().call();
+    assert.equal(messsage, 'hi there');
+  });
+
+  it('update the message value', async ()=>{
+    const newMessage = "Bye Bye";
+    await inbox.methods.setMessage(newMessage).send({from: accounts[0]});
+    const messsage = await inbox.methods.message().call();
+    assert.equal(newMessage, messsage);
   })
+
 
 })
 
