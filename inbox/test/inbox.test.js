@@ -32,8 +32,6 @@ describe('deploy contract', ()=>{
     const messsage = await inbox.methods.message().call();
     assert.equal(newMessage, messsage);
   })
-
-
 })
 
 // class Car {
