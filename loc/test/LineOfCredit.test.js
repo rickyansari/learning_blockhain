@@ -39,7 +39,7 @@ describe('deploy contract', ()=>{
 
   it('bank name initialized', async()=>{
     let updated_status = await LOC.methods.remove_it().call();
-    assert.equal(updated_status, "PNB");
+    assert.equal(updated_status, '');
   })
 
 })

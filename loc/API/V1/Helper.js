@@ -20,6 +20,40 @@ deployContract = async(contract_initializer)=>{
   }
 }
 
+checkStatusFlow = async(contractInstance, next_status)=>{
+  let current_status =  await contractInstance.methods.status().call();
+  switch (currentStatus) {
+    case '':
+      if (next_status === 'GoodsDispatched'){
+        return { success: true}
+      }else{
+        return {success: false}
+      }
+    case 'GoodsDispatched':
+      if (next_status === 'GoodsReceived'){
+        return { success: true}
+      }else{
+        return {success: false}
+      }
+    case 'GoodsReceived':
+      if (next_status === 'MoneyTrasnferred'){
+        return { success: true}
+      }else{
+        return {success: false}
+      }
+    case 'MoneyTrasnferred':
+      if (next_status === 'MoneyReceived'){
+        return { success: true}
+      }else{
+        return {success: false}
+      }
+    case 'MoneyReceived':
+      return{ success: false}
+    default:
+      return{ success: false}
+  }
+}
+
 module.exports ={
   getAccounts: getAccounts,
   deployContract: deployContract

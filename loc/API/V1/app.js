@@ -5,16 +5,23 @@ const url = require('url');
 var bodyParser = require('body-parser')
 var jsonParser = bodyParser.json()
 let accounts;
-let LOCInstance;
+var buyer;
+var buyer_bank;
+var seller_bank;
+var seller;
 // key will be contract address.
 var contractsDetail={};
 
 Helper.getAccounts().then(response=>{
   accounts = response.accounts;
+  buyer_bank = accounts[0];
+  buyer = accounts[1];
+  seller = accounts[2];
+  seller_bank = accounts[3];
 });
 
-app.post('/deployContract', (req, res) => {
-  Helper.deployContract(accounts[0]).then((response)=>{
+app.post('/', (req, res) => {
+  Helper.deployContract(buyer_bank).then((response)=>{
     var q = url.parse(req.url, true).query;
     if(response.deployed_contract_instance.options.address){
       contractsDetail[response.deployed_contract_instance.options.address]={
