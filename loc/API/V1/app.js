@@ -9,8 +9,10 @@ var buyer;
 var buyer_bank;
 var seller_bank;
 var seller;
+
 // key will be contract address.
-var contractsDetail={};
+var contractsDetail=[];
+name = 'Deal' + contractsDetail.length.string();
 
 Helper.getAccounts().then(response=>{
   accounts = response.accounts;
@@ -20,12 +22,12 @@ Helper.getAccounts().then(response=>{
   seller_bank = accounts[3];
 });
 
-app.post('/', (req, res) => {
+app.post('/', jsonParser, (req, res) => {
   Helper.deployContract(buyer_bank).then((response)=>{
     var q = url.parse(req.url, true).query;
     if(response.deployed_contract_instance.options.address){
-      contractsDetail[response.deployed_contract_instance.options.address]={
-        instace: response.deployed_contract_instance,
+      var t ={};
+      t['data']= {
         address: response.deployed_contract_instance.options.address,
         name:'',
         buyer:{},
@@ -33,18 +35,23 @@ app.post('/', (req, res) => {
         buyer_bank:{},
         seller_bank:{},
       }
-      console.log("contractsDetail", contractsDetail);
-      res.send({success: true});
+      contractsDetail[0] = t;
+      contractsDetail[1] = t;
+
+      res.send({
+        success: contractsDetail
+      });
     }else{
-      res.send({success: false})
+      res.send({success: fasle})
     }
   })
 })
 
 app.get('/user', async (req, res)=> {
-  let status = await LOCInstance.methods.status().call();
-  console.log("status", status);
-  res.send('Got a POST request')
+  Helper.getContractInstance(contractsDetail[0].data.address).then((response)=>{
+    console.log("response", response.instance);
+    res.send('Got a POST request')
+  })
 })
 
 

@@ -20,6 +20,14 @@ deployContract = async(contract_initializer)=>{
   }
 }
 
+getContractInstance = async(contractAddress)=>{
+  let instance = await new web3.eth.Contract(JSON.parse(interface), contractAddress);
+  console.log(instance);
+  return{
+    instance: instance
+  }
+}
+
 checkStatusFlow = async(contractInstance, next_status)=>{
   let current_status =  await contractInstance.methods.status().call();
   switch (currentStatus) {
@@ -56,5 +64,6 @@ checkStatusFlow = async(contractInstance, next_status)=>{
 
 module.exports ={
   getAccounts: getAccounts,
-  deployContract: deployContract
+  deployContract: deployContract,
+  getContractInstance: getContractInstance,
 }
