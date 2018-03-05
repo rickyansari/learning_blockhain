@@ -15,7 +15,7 @@ contract LineOfCredit{
   /* Constructor function */
   function LineOfCredit(string name) public{
     buyer_bank = msg.sender;
-    remove_it = name;
+    status = name;
   }
 
   /* function modifier */
