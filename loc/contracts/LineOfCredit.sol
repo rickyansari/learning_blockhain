@@ -23,7 +23,7 @@ contract LineOfCredit{
     loc_document_hash = getProof(loc_document);
   }
 
-  function getProof(string document)  private pure returns (bytes32) {
+  function getProof(string document) private pure returns (bytes32) {
     return sha256(document);
   }
 

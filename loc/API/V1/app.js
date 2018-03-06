@@ -2,8 +2,10 @@ const express = require('express')
 const app = express()
 const Helper = require('./Helper');
 const url = require('url');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json()
+
+
 let accounts;
 var buyer;
 var buyer_bank;
@@ -22,7 +24,16 @@ Helper.getAccounts().then(response=>{
   seller_bank = accounts[3];
 });
 
-app.post('/', jsonParser, (req, res) => {
+
+app.post('/singIn', async (req, res)=> {
+  var params = url.parse(req.url, true).query;
+  if(params.userName && usersDetail[params.userName]){
+    let authenticated_user = (usersDetail[params.userName].password === params.password);
+    if(authenticated_user)
+  }
+})
+
+app.post('/',(req, res) => {
   Helper.deployContract(buyer_bank).then((response)=>{
     var q = url.parse(req.url, true).query;
     if(response.deployed_contract_instance.options.address){
