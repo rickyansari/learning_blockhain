@@ -62,7 +62,7 @@ getCurrentStatus = async(contractInstance)=>{
   }
 }
 
-getStatusList = async(currentstatus, role )=>{
+getStatusList = (currentstatus, role )=>{
 	let statusList = statuses;
 if (operations[role][currentstatus] != undefined)
 	{
