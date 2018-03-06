@@ -2,10 +2,6 @@ const express = require('express')
 const app = express()
 const Helper = require('./Helper');
 const url = require('url');
-var bodyParser = require('body-parser');
-var jsonParser = bodyParser.json()
-
-
 let accounts;
 var buyer;
 var buyer_bank;
@@ -14,7 +10,7 @@ var seller;
 
 // key will be contract address.
 var contractsDetail=[];
-name = 'Deal' + contractsDetail.length.string();
+// name = 'Deal' + contractsDetail.length.string();
 
 Helper.getAccounts().then(response=>{
   accounts = response.accounts;
@@ -27,10 +23,7 @@ Helper.getAccounts().then(response=>{
 
 app.post('/singIn', async (req, res)=> {
   var params = url.parse(req.url, true).query;
-  if(params.userName && usersDetail[params.userName]){
-    let authenticated_user = (usersDetail[params.userName].password === params.password);
-    if(authenticated_user)
-  }
+
 })
 
 app.post('/',(req, res) => {
