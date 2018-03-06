@@ -7,7 +7,7 @@ var buyer;
 var buyer_bank;
 var seller_bank;
 var seller;
-
+const {verifyAndGetUserDetail} = require('./controller/SingIn');
 // key will be contract address.
 var contractsDetail=[];
 // name = 'Deal' + contractsDetail.length.string();
@@ -23,27 +23,27 @@ Helper.getAccounts().then(response=>{
 
 app.post('/singIn', async (req, res)=> {
   var params = url.parse(req.url, true).query;
+  verifyAndGetUserDetail(params, );
 
 })
 
-app.post('/',(req, res) => {
+app.post('/createContract',(req, res) => {
   Helper.deployContract(buyer_bank).then((response)=>{
     var q = url.parse(req.url, true).query;
     if(response.deployed_contract_instance.options.address){
-      var t ={};
-      t['data']= {
+      let name = 'Contract ' + contractsDetail.length.string();
+      let contract_detail ={};
+      contract_detail[contract_name]= {
         address: response.deployed_contract_instance.options.address,
-        name:'',
+        name: name,
         buyer:{},
         seller:{},
         buyer_bank:{},
         seller_bank:{},
       }
-      contractsDetail[0] = t;
-      contractsDetail[1] = t;
-
+      contractsDetail.push(contract_detail);
       res.send({
-        success: contractsDetail
+        success: true
       });
     }else{
       res.send({success: fasle})

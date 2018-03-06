@@ -1,34 +1,41 @@
 const usersDetail ={
   sbi:{
+    name: 'state bank',
     password: 'sbi@123',
-    name: 'state bank'
     role:'bank',
   },
   icici:{
+    name: 'icici',
     password: 'icici@123',
     role:'bank',
   },
   axis:{
+    name:'axis',
     password: 'axis@123',
     role:'bank',
   },
   ing:{
+    name:'ing',
     password: 'ing@123',
     role:'bank',
   },
   Ankit:{
+    name:'ankit',
     password:'ankit@123',
     role:'user',
   },
   anupreksha:{
+    name:'anupreksha',
     password:'anupreksha@123',
-      role:'user',
+    role:'user',
   },
   ramana:{
+    name:'ramana',
     password:'ramana@123',
     role:'user',
   },
   kishore:{
+    name:'kishore',
     password: 'kishore@123',
     role:'user',
   }
