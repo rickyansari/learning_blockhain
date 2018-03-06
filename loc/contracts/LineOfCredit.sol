@@ -8,12 +8,14 @@ contract LineOfCredit{
   address public seller;
   bytes32 public deal_document_hash;
   string public status;
+  string public remove_it;
   event LogDocumentProof(bytes32 document_hash);
   event LogStatusChange(string new_status);
 
   /* Constructor function */
-  function LineOfCredit() public{
+  function LineOfCredit(string name) public{
     buyer_bank = msg.sender;
+    status = name;
   }
 
   /* function modifier */
@@ -44,8 +46,16 @@ contract LineOfCredit{
     storeDealDocument(deal_document);
   }
 
-  function addSellerBank(address seller_bank_addresss) public onlySeller{
+  function createSellerBank(address seller_bank_addresss) public onlyBuyerBank{
     seller_bank = seller_bank_addresss;
+  }
+
+  function createBuyer(address buyer_addresss) public onlyBuyerBank{
+    buyer = buyer_addresss;
+  }
+
+  function createSeller(address seller_addresss) public onlyBuyerBank{
+    seller = seller_addresss;
   }
 
   function getProof(string document)  private pure returns (bytes32) {
@@ -57,23 +67,23 @@ contract LineOfCredit{
     LogDocumentProof(deal_document_hash);
   }
 
-   function goodsDispatched() public onlySeller{
-     status= "goods_dispatched";
-     LogStatusChange(status);
-   }
+  function updateGoodsDispatched() public onlySeller{
+    status= "GoodsDispatched";
+    LogStatusChange(status);
+  }
 
-   function goodsReceived() public onlyBuyer{
-      status = "goods_received";
-      LogStatusChange(status);
-   }
+  function updateGoodsReceived() public onlyBuyer{
+    status = "GoodsReceived";
+    LogStatusChange(status);
+  }
 
-   function debitedMoney() public onlyBuyerBank{
-      status = "amount_debited";
-      LogStatusChange(status);
-   }
+  function updateMoneyTransferred() public onlyBuyerBank{
+    status = "MoneyTrasnferred";
+    LogStatusChange(status);
+  }
 
-   function creditedMoney() public onlySellerBank{
-      status = "amount_credited";
-      LogStatusChange(status);
-   }
+  function updateMoneyReceived() public onlySellerBank{
+    status = "MoneyReceived";
+    LogStatusChange(status);
+  }
 }
