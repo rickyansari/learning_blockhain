@@ -2,23 +2,31 @@ pragma solidity ^0.4.17;
 
 contract LineOfCredit{
 
-  address public buyer_bank;
-  address public buyer;
-  address public seller_bank;
-  address public seller;
-  bytes32 public deal_document_hash;
+  address private buyer_bank;
+  address private buyer;
+  address private seller_bank;
+  address private seller;
+  bytes32 public loc_document_hash;
   string public status;
-  string public remove_it;
-  event LogDocumentProof(bytes32 document_hash);
   event LogStatusChange(string new_status);
 
   /* Constructor function */
-  function LineOfCredit(string name) public{
+  function LineOfCredit( address buyer_address, address seller_address, string loc_document) public{
     buyer_bank = msg.sender;
-    status = name;
+    buyer = buyer_address;
+    seller = seller_address;
+    storetLocDocumentHash(loc_document);
+    status = 'LocCreated';
   }
 
-  /* function modifier */
+  function storetLocDocumentHash(string loc_document) private{
+    loc_document_hash = getProof(loc_document);
+  }
+
+  function getProof(string document)  private pure returns (bytes32) {
+    return sha256(document);
+  }
+
   modifier onlyBuyerBank(){
     require(msg.sender == buyer_bank);
     _;
@@ -39,32 +47,20 @@ contract LineOfCredit{
     _;
   }
 
-  /* only buyer bank can invoke this function*/
-  function SubmitDeal(address buyer_address, address seller_address, string deal_document) public onlyBuyerBank {
-    buyer = buyer_address;
-    seller = seller_address;
-    storeDealDocument(deal_document);
-  }
-
-  function createSellerBank(address seller_bank_addresss) public onlyBuyerBank{
+  function createSellerBank(address seller_bank_addresss) public onlySeller{
     seller_bank = seller_bank_addresss;
+    status = "LocNotPresented";
+    LogStatusChange(status);
   }
 
-  function createBuyer(address buyer_addresss) public onlyBuyerBank{
-    buyer = buyer_addresss;
+  function updateValidation() public onlyBuyer{
+    status = "Validation";
+    LogStatusChange(status);
   }
 
-  function createSeller(address seller_addresss) public onlyBuyerBank{
-    seller = seller_addresss;
-  }
-
-  function getProof(string document)  private pure returns (bytes32) {
-    return sha256(document);
-  }
-
-  function storeDealDocument(string document)private{
-    deal_document_hash = getProof(document);
-    LogDocumentProof(deal_document_hash);
+  function updateValidated() public onlySellerBank{
+    status = "Validated";
+    LogStatusChange(status);
   }
 
   function updateGoodsDispatched() public onlySeller{
