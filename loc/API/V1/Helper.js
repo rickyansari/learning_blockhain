@@ -2,7 +2,7 @@ const ganache = require('ganache-cli');
 const Web3 = require('web3'); //Gives constructor function used to get web3 instance.
 const provider = ganache.provider();
 const web3 = new Web3(provider);
-const fs = require('fs')
+const fs = require('fs');
 const { interface , bytecode } = require('../../compile');
 
 getAccounts =  async ()=>{
@@ -41,7 +41,6 @@ readContractsDetailFromFile = ()=>{
     })
   })
   return promise.then((response) => {
-    console.log("response", response);
     return{
       success: true,
       contractsDetail: response
@@ -56,7 +55,6 @@ readContractsDetailFromFile = ()=>{
 
 writeContractsDetailToFile= (contractsDetail)=>{
   var promise = new Promise(function(fulfill, reject) {
-
     fs.writeFile('./ContractsDetail.json', JSON.stringify(contractsDetail), 'utf-8', function(err) {
       if(err){
         reject(err);
@@ -66,14 +64,9 @@ writeContractsDetailToFile= (contractsDetail)=>{
     })
   })
   return promise.then(() => {
-    return{
-      success: true,
-    }
+    return{ success: true }
   }).catch((err)=>{
-    console.log("error", err);
-    return{
-      success: false
-    }
+    return{ success: false }
   })
 }
 

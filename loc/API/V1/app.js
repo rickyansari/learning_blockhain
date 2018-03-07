@@ -1,48 +1,30 @@
-const express = require('express')
-const app = express()
-const Helper = require('./Helper');
+const express = require('express');
+const app = express();
 const url = require('url');
-var {usersDetail} = require('./UsersDetail')
-var uuid = require('uuid');
-const {createContract} = require('./controller/CreateContract');
 
-let accounts;
-
+const Helper = require('./Helper');
 const {verifyAndGetUserDetail} = require('./controller/SingIn');
-// key will be contract address.
-var contractsDetail;
-// name = 'Deal' + contractsDetail.length.string();
+const {createContract} = require('./controller/CreateContract');
+var {usersDetail} = require('./UsersDetail');
 
-Helper.getAccounts().then(response=>{
+var accounts;
+var contractsDetail;
+
+Helper.getAccounts()
+.then((response)=>{
   accounts = response.accounts;
   Object.keys(usersDetail).map((user, index)=>{
     usersDetail[user].address = accounts[index];
   })
-
-  // buyer_bankAddress = accounts[0];
-  // buyerAddress = accounts[1];
-  // sellerAddress = accounts[2];
-  // seller_bankAddress = accounts[3];
 });
 
-getData= ()=>{
-  Helper.readContractsDetailFromFile()
-  .then((response)=>{
-    if(response.success){
-      console.log(response.contractsDetail)
-      contractsDetail = response.contractsDetail;
-    }
-  })
-}
-getData();
+Helper.readContractsDetailFromFile()
+.then((response)=>{
+  if(response.success){
+    contractsDetail = response.contractsDetail;
+  }
+})
 
-
-
-
-
-getRandomKey = ()=>{
-  return uuid.v1();
-}
 app.post('/singIn', async (req, res)=> {
   var params = url.parse(req.url, true).query;
   verifyAndGetUserDetail(params, );
@@ -51,16 +33,14 @@ app.post('/singIn', async (req, res)=> {
 
 app.post('/createContract', async (req, res) => {
   var q = url.parse(req.url, true).query;
-    let response =await createContract(usersDetail, contractsDetail, q)
-    console.log("response", response);
+  let response = await createContract(usersDetail, contractsDetail, q)
+  res.send(response)
 })
 
 app.get('/user', async (req, res)=> {
   Helper.getContractInstance(contractsDetail[0].data.address).then((response)=>{
-    console.log("response", response.instance);
     res.send('Got a POST request')
   })
 })
-
 
 app.listen(3000, () => console.log('Express server listening on port 3000!'))

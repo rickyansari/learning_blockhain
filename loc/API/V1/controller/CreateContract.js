@@ -1,7 +1,7 @@
 const Helper = require('../Helper');
 
 createContract= (usersDetail, contractsDetail, data)=>{
-    var promise = new Promise(function(fulfill, reject) {
+  var promise = new Promise(function(fulfill, reject) {
     var buyer = usersDetail[data.buyer];
     var seller = usersDetail[data.seller]
     var buyerBank = usersDetail[data.buyerBank]
@@ -22,16 +22,16 @@ createContract= (usersDetail, contractsDetail, data)=>{
           seller_bank:null,
           locDocument:params.locDocument,
         }
-        // console.log("data to write", contract_detail);
-        // console.log("before contractsDetail", contractsDetail);
         contractsDetail.contractsDetail[contract_name] = contract_detail;
         Helper.writeContractsDetailToFile(contractsDetail)
         .then((response)=>{
-          fulfill({success: true})
+          fulfill({success: true});
         })
       }else{
-        fulfill({success: false})
+        fulfill({success: false});
       }
+    }).catch((err)=>{
+      reject(err);
     })
   })
 
