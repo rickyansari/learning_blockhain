@@ -2,6 +2,7 @@ const ganache = require('ganache-cli');
 const Web3 = require('web3'); //Gives constructor function used to get web3 instance.
 const provider = ganache.provider();
 const web3 = new Web3(provider);
+const fs = require('fs')
 const { interface , bytecode } = require('../../compile');
 
 getAccounts =  async ()=>{
@@ -28,42 +29,59 @@ getContractInstance = async(contractAddress)=>{
   }
 }
 
-checkStatusFlow = async(contractInstance, next_status)=>{
-  let current_status =  await contractInstance.methods.status().call();
-  switch (currentStatus) {
-    case '':
-      if (next_status === 'GoodsDispatched'){
-        return { success: true}
+readContractsDetailFromFile = ()=>{
+  var promise = new Promise(function(fulfill, reject) {
+    fs.readFile('./ContractsDetail.json', 'utf-8', function(err, data) {
+      if(err){
+        reject(err);
       }else{
-        return {success: false}
+        var contractsDetail= JSON.parse(data);
+        fulfill(contractsDetail);
       }
-    case 'GoodsDispatched':
-      if (next_status === 'GoodsReceived'){
-        return { success: true}
+    })
+  })
+  return promise.then((response) => {
+    console.log("response", response);
+    return{
+      success: true,
+      contractsDetail: response
+    }
+  }).catch((err)=>{
+    console.log("error", err);
+    return{
+      success: false
+    }
+  })
+}
+
+writeContractsDetailToFile= (contractsDetail)=>{
+  var promise = new Promise(function(fulfill, reject) {
+    data = {contractsDetail:contractsDetail}
+    fs.writeFile('./ContractsDetail.json', JSON.stringify(data), 'utf-8', function(err) {
+      if(err){
+        reject(err);
       }else{
-        return {success: false}
+        fulfill();
       }
-    case 'GoodsReceived':
-      if (next_status === 'MoneyTrasnferred'){
-        return { success: true}
-      }else{
-        return {success: false}
-      }
-    case 'MoneyTrasnferred':
-      if (next_status === 'MoneyReceived'){
-        return { success: true}
-      }else{
-        return {success: false}
-      }
-    case 'MoneyReceived':
-      return{ success: false}
-    default:
-      return{ success: false}
-  }
+    })
+  })
+  return promise.then(() => {
+    console.log("successfull");
+    return{
+      success: true,
+    }
+  }).catch((err)=>{
+    console.log("error", err);
+    return{
+      success: false
+    }
+  })
 }
 
 module.exports ={
   getAccounts: getAccounts,
   deployContract: deployContract,
   getContractInstance: getContractInstance,
+  readContractsDetailFromFile: readContractsDetailFromFile,
+  writeContractsDetailToFile: writeContractsDetailToFile,
 }
