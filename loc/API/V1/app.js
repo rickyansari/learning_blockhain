@@ -34,6 +34,9 @@ writeData= ()=>{
     console.log("response", response);
   })
 }
+// To call the above functions
+// getData();
+// writeData();
 
 app.post('/singIn', async (req, res)=> {
   var params = url.parse(req.url, true).query;
