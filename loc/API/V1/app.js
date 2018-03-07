@@ -9,7 +9,7 @@ var seller_bank;
 var seller;
 const {verifyAndGetUserDetail} = require('./controller/SingIn');
 // key will be contract address.
-var contractsDetail=[];
+var contractsDetail=[{ashfaq:"SDSDSD"}];
 // name = 'Deal' + contractsDetail.length.string();
 
 Helper.getAccounts().then(response=>{
@@ -20,6 +20,20 @@ Helper.getAccounts().then(response=>{
   seller_bank = accounts[3];
 });
 
+getData= ()=>{
+  Helper.readContractsDetailFromFile()
+  .then((response)=>{
+    console.log("after reading data", response);
+  })
+}
+
+writeData= ()=>{
+  // console.log("before writing", contractsDetail);
+  Helper.writeContractsDetailToFile(contractsDetail)
+  .then((response)=>{
+    console.log("response", response);
+  })
+}
 
 app.post('/singIn', async (req, res)=> {
   var params = url.parse(req.url, true).query;
