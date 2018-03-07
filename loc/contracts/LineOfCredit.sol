@@ -53,6 +53,11 @@ contract LineOfCredit{
     LogStatusChange(status);
   }
 
+  function updateLocPresented() public onlyBuyer{
+    status = "LOCPresentedToSeller";
+    LogStatusChange(status);
+  }
+
   function updateValidation() public onlyBuyer{
     status = "Validation";
     LogStatusChange(status);
