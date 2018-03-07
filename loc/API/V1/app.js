@@ -3,7 +3,7 @@ const app = express();
 const url = require('url');
 
 const Helper = require('./Helper');
-const {verifyAndGetUserDetail} = require('./controller/SingIn');
+const { verifyUser, getUserDetails} = require('./controller/SingIn');
 const {createContract} = require('./controller/CreateContract');
 var {usersDetail} = require('./UsersDetail');
 
@@ -28,7 +28,14 @@ Helper.readContractsDetailFromFile()
 app.post('/singIn', async (req, res)=> {
   var params = url.parse(req.url, true).query;
   console.log("params", params);
-  verifyAndGetUserDetail(params, contractsDetail.contractsDetail, params);
+  let response = verifyUser(params);
+  if(response.success){
+    getUserDetails(response.name, contractsDetail.contractsDetail).then((response)=>{
+      res.send(response)
+    })
+  }else{
+    res.send({success: false})
+  }
 })
 
 app.post('/createContract', async (req, res) => {

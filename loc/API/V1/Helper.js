@@ -3,6 +3,8 @@ const Web3 = require('web3'); //Gives constructor function used to get web3 inst
 const provider = ganache.provider();
 const web3 = new Web3(provider);
 const fs = require('fs');
+const path = require('path');
+
 const { interface , bytecode } = require('../../compile');
 
 getAccounts =  async ()=>{
@@ -31,7 +33,8 @@ getContractInstance = async(contractAddress)=>{
 
 readContractsDetailFromFile = ()=>{
   var promise = new Promise(function(fulfill, reject) {
-    fs.readFile('./ContractsDetail.json', 'utf-8', function(err, data) {
+    const filePath = path.resolve(__dirname, '', 'ContractsDetail.json');
+    fs.readFile(filePath, 'utf-8', function(err, data) {
       if(err){
         reject(err);
       }else{
@@ -55,7 +58,8 @@ readContractsDetailFromFile = ()=>{
 
 writeContractsDetailToFile= (contractsDetail)=>{
   var promise = new Promise(function(fulfill, reject) {
-    fs.writeFile('./ContractsDetail.json', JSON.stringify(contractsDetail), 'utf-8', function(err) {
+    const filePath = path.resolve(__dirname, '', 'ContractsDetail.json');
+    fs.writeFile(filePath, JSON.stringify(contractsDetail), 'utf-8', function(err) {
       if(err){
         reject(err);
       }else{

@@ -3,14 +3,14 @@ var Helper = require('../Helper');
 const inValidStatusForSeller = [];
 const inValidStatusForSellerBank = [];
 
-verifyAndGetUserDetail= (params, contractsDetail)=>{
+verifyUser= (params)=>{
   if(params.userName && usersDetail[params.userName]){
     if((usersDetail[params.userName].password === params.password)){
       console.log("authentic user");
-      getUserDetails(usersDetail[params.userName].name, contractsDetail).then((response)=>{
-        console.log("user_data", response);
-        return response;
-      })
+      return{
+        success: true,
+        name: usersDetail[params.userName].name
+      }
     }
   }
   return {success: false};
@@ -89,5 +89,6 @@ getContractNameAndRoleOfUser = async (name, contract) => {
 
 
 module.exports = {
-  verifyAndGetUserDetail: verifyAndGetUserDetail
+  verifyUser: verifyUser,
+  getUserDetails: getUserDetails
 }
