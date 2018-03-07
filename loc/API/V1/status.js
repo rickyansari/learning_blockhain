@@ -75,12 +75,8 @@ if (operations[role][currentstatus] != undefined)
   }
 }
 
-updateStatus = async(contractInstance)=>{
- 
- 
-}
 module.exports ={
   getCurrentStatus: getCurrentStatus,
   getStatusList: getStatusList
-  
+
 }

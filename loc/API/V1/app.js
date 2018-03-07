@@ -2,70 +2,57 @@ const express = require('express')
 const app = express()
 const Helper = require('./Helper');
 const url = require('url');
+var {usersDetail} = require('./UsersDetail')
+var uuid = require('uuid');
+const {createContract} = require('./controller/CreateContract');
+
 let accounts;
-var buyer;
-var buyer_bank;
-var seller_bank;
-var seller;
+
 const {verifyAndGetUserDetail} = require('./controller/SingIn');
 // key will be contract address.
-var contractsDetail=[{ashfaq:"SDSDSD"}];
+var contractsDetail;
 // name = 'Deal' + contractsDetail.length.string();
 
 Helper.getAccounts().then(response=>{
   accounts = response.accounts;
-  buyer_bank = accounts[0];
-  buyer = accounts[1];
-  seller = accounts[2];
-  seller_bank = accounts[3];
+  Object.keys(usersDetail).map((user, index)=>{
+    usersDetail[user].address = accounts[index];
+  })
+
+  // buyer_bankAddress = accounts[0];
+  // buyerAddress = accounts[1];
+  // sellerAddress = accounts[2];
+  // seller_bankAddress = accounts[3];
 });
 
 getData= ()=>{
   Helper.readContractsDetailFromFile()
   .then((response)=>{
-    console.log("after reading data", response);
+    if(response.success){
+      console.log(response.contractsDetail)
+      contractsDetail = response.contractsDetail;
+    }
   })
 }
+getData();
 
-writeData= ()=>{
-  // console.log("before writing", contractsDetail);
-  Helper.writeContractsDetailToFile(contractsDetail)
-  .then((response)=>{
-    console.log("response", response);
-  })
+
+
+
+
+getRandomKey = ()=>{
+  return uuid.v1();
 }
-// To call the above functions
-// getData();
-// writeData();
-
 app.post('/singIn', async (req, res)=> {
   var params = url.parse(req.url, true).query;
   verifyAndGetUserDetail(params, );
 
 })
 
-app.post('/createContract',(req, res) => {
-  Helper.deployContract(buyer_bank).then((response)=>{
-    var q = url.parse(req.url, true).query;
-    if(response.deployed_contract_instance.options.address){
-      let name = 'Contract ' + contractsDetail.length.string();
-      let contract_detail ={};
-      contract_detail[contract_name]= {
-        address: response.deployed_contract_instance.options.address,
-        name: name,
-        buyer:{},
-        seller:{},
-        buyer_bank:{},
-        seller_bank:{},
-      }
-      contractsDetail.push(contract_detail);
-      res.send({
-        success: true
-      });
-    }else{
-      res.send({success: fasle})
-    }
-  })
+app.post('/createContract', async (req, res) => {
+  var q = url.parse(req.url, true).query;
+    let response =await createContract(usersDetail, contractsDetail, q)
+    console.log("response", response);
 })
 
 app.get('/user', async (req, res)=> {

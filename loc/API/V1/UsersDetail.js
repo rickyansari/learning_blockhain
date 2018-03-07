@@ -19,7 +19,7 @@ const usersDetail ={
     password: 'ing@123',
     role:'bank',
   },
-  Ankit:{
+  ankit:{
     name:'ankit',
     password:'ankit@123',
     role:'user',
@@ -37,6 +37,16 @@ const usersDetail ={
   kishore:{
     name:'kishore',
     password: 'kishore@123',
+    role:'user',
+  },
+  ramky:{
+    name:'ramky',
+    password:'ramky@123',
+    role:'user',
+  },
+  verma:{
+    name:'verma',
+    password: 'verma@123',
     role:'user',
   }
 }
