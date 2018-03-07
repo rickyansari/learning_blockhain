@@ -12,9 +12,9 @@ getAccounts =  async ()=>{
   }
 }
 
-deployContract = async(contract_initializer)=>{
+deployContract = async(contract_initializer, params )=>{
   let deployed_contract_instance = await new web3.eth.Contract(JSON.parse(interface))
-    .deploy({data: bytecode, arguments:["PNB"]})
+    .deploy({data: bytecode, arguments:[params.buyer, params.seller, params.locDocument]})
     .send({from: contract_initializer, gas:'1000000'})
   return{
     deployed_contract_instance: deployed_contract_instance
@@ -56,8 +56,8 @@ readContractsDetailFromFile = ()=>{
 
 writeContractsDetailToFile= (contractsDetail)=>{
   var promise = new Promise(function(fulfill, reject) {
-    data = {contractsDetail:contractsDetail}
-    fs.writeFile('./ContractsDetail.json', JSON.stringify(data), 'utf-8', function(err) {
+
+    fs.writeFile('./ContractsDetail.json', JSON.stringify(contractsDetail), 'utf-8', function(err) {
       if(err){
         reject(err);
       }else{
@@ -66,7 +66,6 @@ writeContractsDetailToFile= (contractsDetail)=>{
     })
   })
   return promise.then(() => {
-    console.log("successfull");
     return{
       success: true,
     }
