@@ -87,5 +87,5 @@ updateStatus = async(contractInstance, status, user)=>{
 module.exports ={
   getCurrentStatus: getCurrentStatus,
   getStatusList: getStatusList
-  
+
 }
