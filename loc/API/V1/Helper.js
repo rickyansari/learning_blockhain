@@ -12,10 +12,11 @@ getAccounts =  async ()=>{
   }
 }
 
-deployContract = async(contract_initializer, params )=>{
+deployContract = async(params )=>{
+  console.log("params", params);
   let deployed_contract_instance = await new web3.eth.Contract(JSON.parse(interface))
     .deploy({data: bytecode, arguments:[params.buyer, params.seller, params.locDocument]})
-    .send({from: contract_initializer, gas:'1000000'})
+    .send({from: params.contractInitializer, gas:'1000000'})
   return{
     deployed_contract_instance: deployed_contract_instance
   }
@@ -23,7 +24,6 @@ deployContract = async(contract_initializer, params )=>{
 
 getContractInstance = async(contractAddress)=>{
   let instance = await new web3.eth.Contract(JSON.parse(interface), contractAddress);
-  console.log(instance);
   return{
     instance: instance
   }

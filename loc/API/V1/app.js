@@ -27,19 +27,23 @@ Helper.readContractsDetailFromFile()
 
 app.post('/singIn', async (req, res)=> {
   var params = url.parse(req.url, true).query;
-  verifyAndGetUserDetail(params, );
-
+  console.log("params", params);
+  verifyAndGetUserDetail(params, contractsDetail.contractsDetail, params);
 })
 
 app.post('/createContract', async (req, res) => {
-  var q = url.parse(req.url, true).query;
-  let response = await createContract(usersDetail, contractsDetail, q)
+  var apiParams = url.parse(req.url, true).query;
+  console.log(apiParams, "q")
+  let response = await createContract(usersDetail, contractsDetail, apiParams);
   res.send(response)
 })
 
 app.get('/user', async (req, res)=> {
-  Helper.getContractInstance(contractsDetail[0].data.address).then((response)=>{
-    res.send('Got a POST request')
+  Helper.getContractInstance(contractsDetail.contractsDetail.Contract0.address).then((response)=>{
+    response.instance.methods.status().call().then((response)=>{
+      console.log('response', response);
+      res.send('Got a POST request')
+    })
   })
 })
 
