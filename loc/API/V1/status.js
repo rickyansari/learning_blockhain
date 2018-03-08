@@ -80,7 +80,7 @@ if (operations[role][currentstatus] != undefined)
 
 updateStatus = async(contractInstance, status, user)=>{
  if(status == statuses[0].statusName)
-	 await contractInstance.methods.updateLocPresented()send({from: user.address})
+	 await contractInstance.methods.updateLocPresented().send({from: user.address})
  else if(status == statuses[1].statusName)
 	 await contractInstance.methods.status().call();
  

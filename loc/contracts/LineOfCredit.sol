@@ -7,7 +7,7 @@ contract LineOfCredit{
   address private seller_bank;
   address private seller;
   bytes32 public loc_document_hash;
-  string public status;
+  string private status;
   event LogStatusChange(string new_status);
 
   /* Constructor function */
@@ -16,10 +16,18 @@ contract LineOfCredit{
     buyer = buyer_address;
     seller = seller_address;
     storetLocDocumentHash(loc_document);
-    status = 'LocCreated';
+    status = "LocCreated";
   }
 
-  function storetLocDocumentHash(string loc_document) private{
+  function getLocDocumentHash()public view returns(bytes32) {
+    return loc_document_hash;
+  }
+
+  function getContractStatus()public view returns(string) {
+    return status;
+  }
+
+  function storetLocDocumentHash(string loc_document) private {
     loc_document_hash = getProof(loc_document);
   }
 
@@ -47,7 +55,7 @@ contract LineOfCredit{
     _;
   }
 
-  function createSellerBank(address seller_bank_addresss) public onlySeller{
+  function createSellerBank(address seller_bank_addresss) public onlySeller { 
     seller_bank = seller_bank_addresss;
     status = "LocNotPresented";
     LogStatusChange(status);
@@ -58,32 +66,32 @@ contract LineOfCredit{
     LogStatusChange(status);
   }
 
-  function updateValidation() public onlyBuyer{
+  function updateValidation() public onlyBuyer {
     status = "Validation";
     LogStatusChange(status);
   }
 
-  function updateValidated() public onlySellerBank{
+  function updateValidated() public onlySellerBank {
     status = "Validated";
     LogStatusChange(status);
   }
 
-  function updateGoodsDispatched() public onlySeller{
-    status= "GoodsDispatched";
+  function updateGoodsDispatched() public onlySeller {
+    status = "GoodsDispatched";
     LogStatusChange(status);
   }
 
-  function updateGoodsReceived() public onlyBuyer{
+  function updateGoodsReceived() public onlyBuyer {
     status = "GoodsReceived";
     LogStatusChange(status);
   }
 
-  function updateMoneyTransferred() public onlyBuyerBank{
+  function updateMoneyTransferred() public onlyBuyerBank {
     status = "MoneyTrasnferred";
     LogStatusChange(status);
   }
 
-  function updateMoneyReceived() public onlySellerBank{
+  function updateMoneyReceived() public onlySellerBank {
     status = "MoneyReceived";
     LogStatusChange(status);
   }

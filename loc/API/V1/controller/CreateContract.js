@@ -1,16 +1,17 @@
 const Helper = require('../Helper');
 
-createContract= (usersDetail, contractsDetail, data)=>{
-    var promise = new Promise(function(fulfill, reject) {
-    var buyer = usersDetail[data.buyer];
-    var seller = usersDetail[data.seller]
-    var buyerBank = usersDetail[data.buyerBank]
+createContract= (usersDetail, contractsDetail, apiData)=>{
+  var promise = new Promise(function(fulfill, reject) {
+    var buyer = usersDetail[apiData.buyer];
+    var seller = usersDetail[apiData.seller]
+    var buyerBank = usersDetail[apiData.buyerBank]
     let params={
+      contractInitializer: buyerBank.address,
       buyer: buyer.address,
       seller: seller.address,
-      locDocument: data.locDocument,
+      locDocument: apiData.locDocument,
     }
-    Helper.deployContract(buyerBank.address, params).then((response)=>{
+    Helper.deployContract(params).then((response)=>{
       if(response.deployed_contract_instance.options.address){
         let contract_name = 'Contract' + Object.keys(contractsDetail.contractsDetail).length;
         let contract_detail= {
@@ -18,35 +19,31 @@ createContract= (usersDetail, contractsDetail, data)=>{
           name: contract_name,
           buyer:buyer,
           seller:seller,
-          buyer_bank:buyerBank,
-          seller_bank:null,
+          buyerBank:buyerBank,
+          sellerBank:null,
           locDocument:params.locDocument,
         }
-        // console.log("data to write", contract_detail);
-        // console.log("before contractsDetail", contractsDetail);
         contractsDetail.contractsDetail[contract_name] = contract_detail;
         Helper.writeContractsDetailToFile(contractsDetail)
         .then((response)=>{
-          fulfill({success: true})
+          fulfill({success: true});
         })
       }else{
-        fulfill({success: false})
+        fulfill({success: false});
       }
+    }).catch((err)=>{
+      reject(err);
     })
   })
 
   return promise.then((response) => {
     return response
   }).catch((err)=>{
+      console.log("error",err);
       return{ success: false }
   })
 }
 
-writeData= ()=>{
-
-}
-
 module.exports ={
   createContract: createContract
-
 }
