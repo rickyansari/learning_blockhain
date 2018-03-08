@@ -1,12 +1,11 @@
 pragma solidity ^0.4.17;
 
-contract LineOfCredit{
-
+contract LineOfCredit {
   address private buyer_bank;
   address private buyer;
   address private seller_bank;
   address private seller;
-  bytes32 public loc_document_hash;
+  bytes32 private loc_document_hash;
   string private status;
   event LogStatusChange(string new_status);
 
@@ -61,7 +60,9 @@ contract LineOfCredit{
     LogStatusChange(status);
   }
 
-  function updateLocPresented() public onlyBuyer{
+
+ 
+  function updateLocPresented() public onlyBuyer {
     status = "LOCPresentedToSeller";
     LogStatusChange(status);
   }

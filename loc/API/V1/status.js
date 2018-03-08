@@ -59,13 +59,12 @@ const statuses = [
 
 getCurrentStatus = async(contractInstance)=>{
    let current_status =  await contractInstance.methods.status().call();
-   console.log('current_status' + current_status)
   return{
     currentStatus: current_status
   }
 }
 
-getStatusList = async(currentstatus, role )=>{
+getStatusList = (currentstatus, role )=>{
 	let statusList = statuses;
 	var priority;
 	for(var i=0;i< statusList.length;i++)
@@ -75,6 +74,9 @@ getStatusList = async(currentstatus, role )=>{
 			priority = i;
 			break;
 		}
+		var priority = parseInt(operations[role][currentstatus]);
+		statusList[priority+1-1].status = true;
+//		console.log(operations[role][current_status])
 	}
 	priority = priority +1 ;
 	currentstatus = statusList[priority].statusName;
@@ -87,7 +89,6 @@ getStatusList = async(currentstatus, role )=>{
     statusList: statusList
   }
 }
-
 updateStatus = async(contractDetail, updtaedStatus, user, contractsDetail)=>{
 	return Helper.getContractInstance(contractDetail.address).then(async (response) => {
 		if(updtaedStatus == statuses[1].statusName){
@@ -110,6 +111,7 @@ updateStatus = async(contractDetail, updtaedStatus, user, contractsDetail)=>{
 
  
 }
+
 module.exports ={
   getCurrentStatus: getCurrentStatus,
   getStatusList: getStatusList,
