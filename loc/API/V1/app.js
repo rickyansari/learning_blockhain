@@ -1,66 +1,64 @@
-const express = require('express')
-const app = express()
-const Helper = require('./Helper');
+const express = require('express');
+const app = express();
 const url = require('url');
-var {usersDetail} = require('./UsersDetail')
-var uuid = require('uuid');
+var bodyParser = require('body-parser');
+var jsonParser = bodyParser.json();
+const Helper = require('./Helper');
+const { verifyUser, getUserDetails} = require('./controller/SingIn');
 const {createContract} = require('./controller/CreateContract');
+const {getDealDetails} = require('./controller/ContractDetails');
+var {usersDetail} = require('./UsersDetail');
 
-let accounts;
-
-const {verifyAndGetUserDetail} = require('./controller/SingIn');
-// key will be contract address.
+var accounts;
 var contractsDetail;
-// name = 'Deal' + contractsDetail.length.string();
 
-Helper.getAccounts().then(response=>{
+Helper.getAccounts()
+.then((response)=>{
   accounts = response.accounts;
   Object.keys(usersDetail).map((user, index)=>{
     usersDetail[user].address = accounts[index];
   })
-
-  // buyer_bankAddress = accounts[0];
-  // buyerAddress = accounts[1];
-  // sellerAddress = accounts[2];
-  // seller_bankAddress = accounts[3];
 });
 
-getData= ()=>{
-  Helper.readContractsDetailFromFile()
-  .then((response)=>{
-    if(response.success){
-      console.log(response.contractsDetail)
-      contractsDetail = response.contractsDetail;
-    }
-  })
-}
-getData();
-
-
-
-
-
-getRandomKey = ()=>{
-  return uuid.v1();
-}
-app.post('/singIn', async (req, res)=> {
-  var params = url.parse(req.url, true).query;
-  verifyAndGetUserDetail(params, );
-
+Helper.readContractsDetailFromFile()
+.then((response)=>{
+  if(response.success){
+    contractsDetail = response.contractsDetail;
+  }
 })
 
-app.post('/createContract', async (req, res) => {
-  var q = url.parse(req.url, true).query;
-    let response =await createContract(usersDetail, contractsDetail, q)
-    console.log("response", response);
+app.post('/signIn', jsonParser, async (req, res)=> {
+  var params = req.body;
+  let response = verifyUser(params);
+  if(response.success){
+    getUserDetails(response.name, contractsDetail.contractsDetail).then((response)=>{
+      res.send(response)
+    })
+  }else{
+    res.send({success: false})
+  }
+})
+
+app.post('/createContract', jsonParser, async (req, res) => {
+  var apiParams = req.body;
+  let response = await createContract(usersDetail, contractsDetail, apiParams);
+  res.send(response)
+})
+
+app.post('/getDealDetails', async (req, res) => {
+  var apiParams = url.parse(req.url, true).query;
+  console.log(apiParams, "q")
+  let response = await getDealDetails( apiParams.contractName, apiParams.userName, contractsDetail);
+  res.send(response)
 })
 
 app.get('/user', async (req, res)=> {
-  Helper.getContractInstance(contractsDetail[0].data.address).then((response)=>{
-    console.log("response", response.instance);
-    res.send('Got a POST request')
+  Helper.getContractInstance(contractsDetail.contractsDetail.Contract0.address).then((response)=>{
+    response.instance.methods.status().call().then((response)=>{
+      console.log('response', response);
+      res.send('Got a POST request')
+    })
   })
 })
-
 
 app.listen(3000, () => console.log('Express server listening on port 3000!'))
