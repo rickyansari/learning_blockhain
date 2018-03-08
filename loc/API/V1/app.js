@@ -1,10 +1,12 @@
 const express = require('express');
 const app = express();
 const url = require('url');
-
+var bodyParser = require('body-parser');
+var jsonParser = bodyParser.json();
 const Helper = require('./Helper');
 const { verifyUser, getUserDetails} = require('./controller/SingIn');
 const {createContract} = require('./controller/CreateContract');
+const {getDealDetails} = require('./controller/ContractDetails');
 var {usersDetail} = require('./UsersDetail');
 
 var accounts;
@@ -25,9 +27,8 @@ Helper.readContractsDetailFromFile()
   }
 })
 
-app.post('/singIn', async (req, res)=> {
-  var params = url.parse(req.url, true).query;
-  console.log("params", params);
+app.post('/signIn', jsonParser, async (req, res)=> {
+  var params = req.body;
   let response = verifyUser(params);
   if(response.success){
     getUserDetails(response.name, contractsDetail.contractsDetail).then((response)=>{
@@ -38,10 +39,16 @@ app.post('/singIn', async (req, res)=> {
   }
 })
 
-app.post('/createContract', async (req, res) => {
+app.post('/createContract', jsonParser, async (req, res) => {
+  var apiParams = req.body;
+  let response = await createContract(usersDetail, contractsDetail, apiParams);
+  res.send(response)
+})
+
+app.post('/getDealDetails', async (req, res) => {
   var apiParams = url.parse(req.url, true).query;
   console.log(apiParams, "q")
-  let response = await createContract(usersDetail, contractsDetail, apiParams);
+  let response = await getDealDetails( apiParams.contractName, apiParams.userName, contractsDetail);
   res.send(response)
 })
 
