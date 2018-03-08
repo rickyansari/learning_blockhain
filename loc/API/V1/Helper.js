@@ -2,7 +2,9 @@ const ganache = require('ganache-cli');
 const Web3 = require('web3'); //Gives constructor function used to get web3 instance.
 const provider = ganache.provider();
 const web3 = new Web3(provider);
-const fs = require('fs')
+const fs = require('fs');
+const path = require('path');
+
 const { interface , bytecode } = require('../../compile');
 
 getAccounts =  async ()=>{
@@ -12,10 +14,11 @@ getAccounts =  async ()=>{
   }
 }
 
-deployContract = async(contract_initializer, params )=>{
+deployContract = async(params )=>{
+  console.log("params", params);
   let deployed_contract_instance = await new web3.eth.Contract(JSON.parse(interface))
     .deploy({data: bytecode, arguments:[params.buyer, params.seller, params.locDocument]})
-    .send({from: contract_initializer, gas:'1000000'})
+    .send({from: params.contractInitializer, gas:'1000000'})
   return{
     deployed_contract_instance: deployed_contract_instance
   }
@@ -23,7 +26,6 @@ deployContract = async(contract_initializer, params )=>{
 
 getContractInstance = async(contractAddress)=>{
   let instance = await new web3.eth.Contract(JSON.parse(interface), contractAddress);
-  console.log(instance);
   return{
     instance: instance
   }
@@ -31,7 +33,8 @@ getContractInstance = async(contractAddress)=>{
 
 readContractsDetailFromFile = ()=>{
   var promise = new Promise(function(fulfill, reject) {
-    fs.readFile('./ContractsDetail.json', 'utf-8', function(err, data) {
+    const filePath = path.resolve(__dirname, '', 'ContractsDetail.json');
+    fs.readFile(filePath, 'utf-8', function(err, data) {
       if(err){
         reject(err);
       }else{
@@ -41,7 +44,6 @@ readContractsDetailFromFile = ()=>{
     })
   })
   return promise.then((response) => {
-    console.log("response", response);
     return{
       success: true,
       contractsDetail: response
@@ -56,8 +58,8 @@ readContractsDetailFromFile = ()=>{
 
 writeContractsDetailToFile= (contractsDetail)=>{
   var promise = new Promise(function(fulfill, reject) {
-
-    fs.writeFile('./ContractsDetail.json', JSON.stringify(contractsDetail), 'utf-8', function(err) {
+    const filePath = path.resolve(__dirname, '', 'ContractsDetail.json');
+    fs.writeFile(filePath, JSON.stringify(contractsDetail), 'utf-8', function(err) {
       if(err){
         reject(err);
       }else{
@@ -66,14 +68,9 @@ writeContractsDetailToFile= (contractsDetail)=>{
     })
   })
   return promise.then(() => {
-    return{
-      success: true,
-    }
+    return{ success: true }
   }).catch((err)=>{
-    console.log("error", err);
-    return{
-      success: false
-    }
+    return{ success: false }
   })
 }
 
