@@ -1,6 +1,8 @@
+const {getDealDetails} = require('./controller/ContractDetails');
+const Helper = require('./Helper');
 const operations = {
 	'buyer' : {
-		'LOC Presented' : '2',
+		'LOCPresentedToSeller' : '2',
 		'Goods Received' : '6'
 	},
 	'seller' : {
@@ -8,7 +10,7 @@ const operations = {
 		'Goods Dispatched' : '5'
 	},
 	'buyerBank' : {
-		'LOC Created' : '1',
+		'LocCreated' : '1',
 		'Money Debited' : '7'
 	},
 	'sellerBank' : {
@@ -21,11 +23,11 @@ const statuses = [
 
 	 {
 		'status' : false,
-		'statusName' : 'LOC Created'
+		'statusName' : 'LocCreated'
 	},
 	 {
 		'status' : false,
-		'statusName' : 'LOC Presented'
+		'statusName' : 'LOCPresentedToSeller'
 	},
 	 {
 		'status' : false,
@@ -64,19 +66,54 @@ getCurrentStatus = async(contractInstance)=>{
 
 getStatusList = (currentstatus, role )=>{
 	let statusList = statuses;
-if (operations[role][currentstatus] != undefined)
+	var priority;
+	for(var i=0;i< statusList.length;i++)
 	{
+		if(statusList[i].statusName == currentstatus )
+		{
+			priority = i;
+			break;
+		}
 		var priority = parseInt(operations[role][currentstatus]);
 		statusList[priority+1-1].status = true;
 //		console.log(operations[role][current_status])
 	}
+	priority = priority +1 ;
+	currentstatus = statusList[priority].statusName;
+	console.log('operations[role][currentstatus]',operations[role][currentstatus])
+	if (operations[role][currentstatus])
+		{		
+				statusList[priority].status = true;
+		}
   return{
     statusList: statusList
   }
 }
+updateStatus = async(contractDetail, updtaedStatus, user, contractsDetail)=>{
+	return Helper.getContractInstance(contractDetail.address).then(async (response) => {
+		if(updtaedStatus == statuses[1].statusName){
+			response.instance.methods.updateLocPresented().send({from: user.address}).then(async() =>{
+				let response = await getDealDetails( contractDetail.name, user.name, contractsDetail);
+				return{
+					success : true,
+					dealDetails: response.dealDetails
+				}		
+			}).catch((err)=>{
+				return {
+					success: false
+				}
+			})
+		}
+		return {
+			success: false
+		}
+	})
+
+ 
+}
 
 module.exports ={
   getCurrentStatus: getCurrentStatus,
-  getStatusList: getStatusList
-
+  getStatusList: getStatusList,
+  updateStatus:updateStatus
 }

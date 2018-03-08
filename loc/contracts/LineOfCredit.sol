@@ -60,6 +60,8 @@ contract LineOfCredit {
     LogStatusChange(status);
   }
 
+
+ 
   function updateLocPresented() public onlyBuyer {
     status = "LOCPresentedToSeller";
     LogStatusChange(status);
@@ -76,7 +78,7 @@ contract LineOfCredit {
   }
 
   function updateGoodsDispatched() public onlySeller {
-    status= "GoodsDispatched";
+    status = "GoodsDispatched";
     LogStatusChange(status);
   }
 

@@ -7,10 +7,11 @@ const Helper = require('./Helper');
 const { verifyUser, getUserDetails} = require('./controller/SingIn');
 const {createContract} = require('./controller/CreateContract');
 const {getDealDetails} = require('./controller/ContractDetails');
+const {updateStatus} = require('./status')
 var {usersDetail} = require('./UsersDetail');
 
 var accounts;
-var contractsDetail;
+var contractsDetail = {'contractsDetail':{}};
 
 Helper.getAccounts()
 .then((response)=>{
@@ -20,12 +21,7 @@ Helper.getAccounts()
   })
 });
 
-Helper.readContractsDetailFromFile()
-.then((response)=>{
-  if(response.success){
-    contractsDetail = response.contractsDetail;
-  }
-})
+
 
 app.post('/signIn', jsonParser, async (req, res)=> {
   var params = req.body;
@@ -49,6 +45,22 @@ app.post('/getDealDetails', async (req, res) => {
   var apiParams = url.parse(req.url, true).query;
   console.log(apiParams, "q")
   let response = await getDealDetails( apiParams.contractName, apiParams.userName, contractsDetail);
+  res.send(response)
+})
+
+app.post('/getDealDetails', async (req, res) => {
+  var apiParams = url.parse(req.url, true).query;
+  console.log(apiParams, "q")
+  let response = await getDealDetails( apiParams.contractName, apiParams.userName, contractsDetail);
+  console.log('response is : \n',response)
+  res.send(response)
+})
+
+app.post('/updateStatus', async (req, res) => {
+  var apiParams = url.parse(req.url, true).query;
+  console.log(apiParams, "q")
+  let response = await updateStatus(contractsDetail.contractsDetail[apiParams.contractName], 'LOCPresentedToSeller', usersDetail[apiParams.userName],contractsDetail );
+  console.log('response is : \n',response)
   res.send(response)
 })
 
