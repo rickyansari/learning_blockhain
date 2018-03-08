@@ -57,17 +57,20 @@ const statuses = [
 
 getCurrentStatus = async(contractInstance)=>{
    let current_status =  await contractInstance.methods.status().call();
+   console.log('current_status' + current_status)
   return{
     currentStatus: current_status
   }
 }
 
-getStatusList = (currentstatus, role )=>{
+getStatusList = async(currentstatus, role )=>{
 	let statusList = statuses;
 if (operations[role][currentstatus] != undefined)
 	{
 		var priority = parseInt(operations[role][currentstatus]);
-		statusList[priority+1-1].status = true;
+		priority = priority +1 -1 ;
+		if(operations[role][statusList[priority].statusName] != undefined)
+			statusList[priority+1-1].status = true;
 //		console.log(operations[role][current_status])
 	}
   return{
@@ -75,6 +78,13 @@ if (operations[role][currentstatus] != undefined)
   }
 }
 
+updateStatus = async(contractInstance, status, user)=>{
+ if(status == statuses[0].statusName)
+	 await contractInstance.methods.updateLocPresented()send({from: user.address})
+ else if(status == statuses[1].statusName)
+	 await contractInstance.methods.status().call();
+ 
+}
 module.exports ={
   getCurrentStatus: getCurrentStatus,
   getStatusList: getStatusList
