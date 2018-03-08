@@ -44,11 +44,6 @@ createContract= (usersDetail, contractsDetail, apiData)=>{
   })
 }
 
-writeData= ()=>{
-
-}
-
 module.exports ={
   createContract: createContract
-
 }

@@ -23,8 +23,6 @@ getUserDetails = (userName, contractsDetail)=>{
       console.log("fetching data");
       var indexOfLastContract = Object.keys(contractsDetail).length - 1;
       Object.keys(contractsDetail).map((contract, index)=>{
-        console.log("index", index);
-        console.log("length", Object.keys(contractsDetail).length)
         let response = getContractNameAndRoleOfUser(userName, contractsDetail[contract])
         .then((response)=>{
           if(response.success){
@@ -40,7 +38,6 @@ getUserDetails = (userName, contractsDetail)=>{
       }
     })
     return promise.then((response) => {
-      console.log("response", response);
       return{
         success: true,
         data: response
@@ -54,38 +51,37 @@ getUserDetails = (userName, contractsDetail)=>{
 }
 
 getContractNameAndRoleOfUser = (name, contract) => {
-  return Helper.getContractInstance(contract.address).then((response) => {
-     response.instance.methods.getContractStatus().send().then((response)=>{
-      console.log("response", response);
-      let success = false;
-      let role;
+  return Helper.getContractInstance(contract.address).then(async (response) => {
+    let contractStatus = await response.instance.methods.getContractStatus().call();
+    console.log("contractStatus", contractStatus);
+    let success = false;
+    let role;
 
-      if (contract.buyer && contract.buyer.name === name) {
-        role = "buyer";
-      } else if (contract.buyerBank && contract.buyerBank.name === name) {
-        role = "buyerBank";
-      } else if (contract.seller && contract.seller.name === name) {
-        if (!inValidStatusForSeller.includes(contractStatus)) {
-          role = "seller";
-        }
-      } else if (contract.sellerBank && contract.sellerBank.name === name) {
-        if (!inValidStatusForSellerBank.includes(contractStatus)) {
-          role = "sellerBank";
-        }
+    if (contract.buyer && contract.buyer.name === name) {
+      role = "buyer";
+    } else if (contract.buyerBank && contract.buyerBank.name === name) {
+      role = "buyerBank";
+    } else if (contract.seller && contract.seller.name === name) {
+      if (!inValidStatusForSeller.includes(contractStatus)) {
+        role = "seller";
       }
-      if (role) {
-        return {
-          success: true,
-          data: {
-            role: role,
-            contractName: contract.name
-          }
-        };
-      } else {
-        return { success: false };
+    } else if (contract.sellerBank && contract.sellerBank.name === name) {
+      if (!inValidStatusForSellerBank.includes(contractStatus)) {
+        role = "sellerBank";
       }
-    });
-  })
+    }
+    if (role) {
+      return {
+        success: true,
+        data: {
+          role: role,
+          contractName: contract.name
+        }
+      };
+    } else {
+      return { success: false };
+    }
+  });
 };
 
 module.exports = {
