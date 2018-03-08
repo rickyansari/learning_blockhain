@@ -21,8 +21,6 @@ Helper.getAccounts()
   })
 });
 
-
-
 app.post('/signIn', jsonParser, async (req, res)=> {
   var params = req.body;
   let response = verifyUser(params);
@@ -35,16 +33,10 @@ app.post('/signIn', jsonParser, async (req, res)=> {
   }
 })
 
+
 app.post('/createContract', jsonParser, async (req, res) => {
   var apiParams = req.body;
   let response = await createContract(usersDetail, contractsDetail, apiParams);
-  res.send(response)
-})
-
-app.post('/getDealDetails', async (req, res) => {
-  var apiParams = url.parse(req.url, true).query;
-  console.log(apiParams, "q")
-  let response = await getDealDetails( apiParams.contractName, apiParams.userName, contractsDetail);
   res.send(response)
 })
 
@@ -59,9 +51,20 @@ app.post('/getDealDetails', async (req, res) => {
 app.post('/updateStatus', async (req, res) => {
   var apiParams = url.parse(req.url, true).query;
   console.log(apiParams, "q")
-  let response = await updateStatus(contractsDetail.contractsDetail[apiParams.contractName], 'LOCPresentedToSeller', usersDetail[apiParams.userName],contractsDetail );
+ 
+  let response = await updateStatus(
+    contractsDetail.contractsDetail[apiParams.contractName], 
+    'LOCPresentedToSeller', 
+    usersDetail[apiParams.userName],
+    contractsDetail
+  );
   console.log('response is : \n',response)
-  res.send(response)
+  if(response.success){
+    let dealDetail = await getDealDetails( contractsDetail.contractsDetail[apiParams.contractName].name, apiParams.userName, contractsDetail);
+    res.send(dealDetail);
+  }else{
+    res.send(response)
+  }
 })
 
 app.get('/user', async (req, res)=> {

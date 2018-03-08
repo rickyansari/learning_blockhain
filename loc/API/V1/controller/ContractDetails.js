@@ -12,23 +12,24 @@ getDealDetails = async(contractName, user, contractsDetail)=>{
 		let locDocumentHash = await response.instance.methods.getLocDocumentHash().call();
 		let role = getRole(contractName, user, contractsDetail).role;
 		console.log('role', role);
-		return Status.getStatusList(contractStatus,role).then((response) => {
-			buttonsList = response.statusList;
+		let buttonList = Status.getStatusList(contractStatus,role).statusList;
 			dealDetails = {
 				'contractName' : contractName,
 				'locDocument' : contractDetail.locDocument,
 				'locDocumentHash' : locDocumentHash,
 				'currentStatus' : contractStatus,
-				'buttonsList' : buttonsList
+				'buttonList' : buttonList
 			}
 			console.log('dealDetails : ',dealDetails )
 			return{
+				success: true,
 				dealDetails: dealDetails
 			}
-						
-		})
-		
-	});
+	}).catch((err)=>{
+		return {
+			success: false
+		}
+	})
 	// let contractInstance;
 	// Helper.getContractInstance(contractDetails.address).then((response)=>{
 

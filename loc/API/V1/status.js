@@ -74,29 +74,28 @@ getStatusList = (currentstatus, role )=>{
 			priority = i;
 			break;
 		}
-		var priority = parseInt(operations[role][currentstatus]);
-		statusList[priority+1-1].status = true;
-//		console.log(operations[role][current_status])
 	}
 	priority = priority +1 ;
 	currentstatus = statusList[priority].statusName;
 	console.log('operations[role][currentstatus]',operations[role][currentstatus])
-	if (operations[role][currentstatus])
-		{		
-				statusList[priority].status = true;
-		}
-  return{
-    statusList: statusList
-  }
+	if (operations[role][currentstatus]){		
+		statusList[priority].status = true;
+	}
+  	return{
+    	statusList: statusList
+    }
 }
-updateStatus = async(contractDetail, updtaedStatus, user, contractsDetail)=>{
-	return Helper.getContractInstance(contractDetail.address).then(async (response) => {
+
+updateStatus = (contractDetail, updtaedStatus, user, contractsDetail)=>{
+	return Helper.getContractInstance(contractDetail.address).then((response) => {
 		if(updtaedStatus == statuses[1].statusName){
-			response.instance.methods.updateLocPresented().send({from: user.address}).then(async() =>{
-				let response = await getDealDetails( contractDetail.name, user.name, contractsDetail);
+			var instance = response.instance;
+			return instance.methods.updateLocPresented().send({from: user.address}).then(async () =>{
+				let status = await instance.methods.getContractStatus().call();
+				console.log("status", status);
+				// let response = await getDealDetails( contractDetail.name, user.name, contractsDetail);
 				return{
 					success : true,
-					dealDetails: response.dealDetails
 				}		
 			}).catch((err)=>{
 				return {
