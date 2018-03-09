@@ -1,16 +1,12 @@
 var {usersDetail} = require('../UsersDetail');
 var Helper = require('../Helper');
-const inValidStatusForSeller = [];
-const inValidStatusForSellerBank = [];
+const inValidStatusForSeller = ['LocCreated'];
+const inValidStatusForSellerBank = ['LocCreated', 'LOCPresentedToSeller'];
 
-verifyUser= (params)=>{
+verifyUser = (params)=>{
   if(params.userName && usersDetail[params.userName]){
     if((usersDetail[params.userName].password === params.password)){
-      console.log("authentic user");
-      return{
-        success: true,
-        name: usersDetail[params.userName].name
-      }
+      return{ success: true }
     }
   }
   return {success: false};

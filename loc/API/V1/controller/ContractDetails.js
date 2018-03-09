@@ -12,7 +12,7 @@ getDealDetails = async(contractName, user, contractsDetail)=>{
 		let locDocumentHash = await response.instance.methods.getLocDocumentHash().call();
 		let role = getRole(contractName, user, contractsDetail).role;
 		console.log('role', role);
-		let buttonList = Status.getStatusList(contractStatus,role).statusList;
+		let buttonList = Status.getStatusList(contractStatus, role, contractDetail).statusList;
 			dealDetails = {
 				'contractName' : contractName,
 				'locDocument' : contractDetail.locDocument,
