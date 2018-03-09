@@ -3,14 +3,10 @@ var Helper = require('../Helper');
 const inValidStatusForSeller = [];
 const inValidStatusForSellerBank = [];
 
-verifyUser= (params)=>{
+verifyUser = (params)=>{
   if(params.userName && usersDetail[params.userName]){
     if((usersDetail[params.userName].password === params.password)){
-      console.log("authentic user");
-      return{
-        success: true,
-        name: usersDetail[params.userName].name
-      }
+      return{ success: true }
     }
   }
   return {success: false};
