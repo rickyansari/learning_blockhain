@@ -40,16 +40,16 @@ app.post('/createContract', jsonParser, async (req, res) => {
   res.send(response)
 })
 
-app.post('/getDealDetails', async (req, res) => {
-  var apiParams = url.parse(req.url, true).query;
+app.post('/getDealDetails', jsonParser, async (req, res) => {
+  var apiParams = req.body;
   console.log(apiParams, "q")
   let response = await getDealDetails( apiParams.contractName, apiParams.userName, contractsDetail);
   console.log('response is : \n',response)
   res.send(response)
 })
 
-app.post('/updateStatus', async (req, res) => {
-  var apiParams = url.parse(req.url, true).query;
+app.post('/updateStatus', jsonParser, async (req, res) => {
+  var apiParams = req.body;
   console.log(apiParams, "q")
  
   let response = await updateStatus(

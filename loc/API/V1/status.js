@@ -3,19 +3,19 @@ const Helper = require('./Helper');
 const operations = {
 	'buyer' : {
 		'LOCPresentedToSeller' : '2',
-		'Goods Received' : '6'
+		'GoodsReceived' : '6'
 	},
 	'seller' : {
-		'LOC Presented for Validation' : '3',
-		'Goods Dispatched' : '5'
+		'LOCPresentedForValidation' : '3',
+		'GoodsDispatched' : '5'
 	},
 	'buyerBank' : {
 		'LocCreated' : '1',
-		'Money Debited' : '7'
+		'MoneyTrasnferred' : '7'
 	},
 	'sellerBank' : {
-		'LOC Validated' : '4',
-		'Money Credited' : '8'
+		'LOCValidated' : '4',
+		'MoneyReceived' : '8'
 	}
 };
 
@@ -31,27 +31,27 @@ const statuses = [
 	},
 	 {
 		'status' : false,
-		'statusName' : 'LOC Presented for Validation'
+		'statusName' : 'LOCPresentedForValidation'
 	},
 	 {
 		'status' : false,
-		'statusName' : 'LOC Validated'
+		'statusName' : 'LOCValidated'
 	},
 	 {
 		'status' : false,
-		'statusName' : 'Goods Dispatched'
+		'statusName' : 'GoodsDispatched'
 	},
 	 {
 		'status' : false,
-		'statusName' : 'Goods Received'
+		'statusName' : 'GoodsReceived'
 	},
 	 {
 		'status' : false,
-		'statusName' : 'Money Debited'
+		'statusName' : 'MoneyTrasnferred'
 	},
 	 {
 		'status' : false,
-		'statusName' : 'Money Credited'
+		'statusName' : 'MoneyReceived'
 	}
 
 ];
@@ -89,8 +89,9 @@ getStatusList = (currentstatus, role )=>{
 updateStatus = (contractDetail, updtaedStatus, user, contractsDetail)=>{
 	return Helper.getContractInstance(contractDetail.address).then((response) => {
 		if(updtaedStatus == statuses[1].statusName){
+			 updtaedStatus = 'updateLocPresented';
 			var instance = response.instance;
-			return instance.methods.updateLocPresented().send({from: user.address}).then(async () =>{
+			return instance.methods[updtaedStatus]().send({from: user.address}).then(async () =>{
 				let status = await instance.methods.getContractStatus().call();
 				console.log("status", status);
 				// let response = await getDealDetails( contractDetail.name, user.name, contractsDetail);

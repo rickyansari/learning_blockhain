@@ -56,7 +56,6 @@ contract LineOfCredit {
 
   function createSellerBank(address seller_bank_addresss) public onlySeller { 
     seller_bank = seller_bank_addresss;
-    status = "LocNotPresented";
     LogStatusChange(status);
   }
 
@@ -67,13 +66,13 @@ contract LineOfCredit {
     LogStatusChange(status);
   }
 
-  function updateValidation() public onlyBuyer {
-    status = "Validation";
+  function updateValidation() public onlySeller {
+    status = "LOCPresentedForValidation";
     LogStatusChange(status);
   }
 
   function updateValidated() public onlySellerBank {
-    status = "Validated";
+    status = "LOCValidated";
     LogStatusChange(status);
   }
 
