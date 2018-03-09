@@ -1,6 +1,6 @@
 const usersDetail ={
   sbi:{
-    name: 'state bank',
+    name: 'sbi',
     password: 'sbi@123',
     role:'bank',
   },
