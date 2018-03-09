@@ -49,6 +49,24 @@ app.post('/getDealDetails', jsonParser, async (req, res) => {
   res.send(response)
 })
 
+app.post('/addSellerBank', jsonParser, async (req, res) => {
+  var apiParams = req.body;
+  let contractDetail = contractsDetail.contractsDetail[apiParams.contractName];
+  let sellerBankAddress = usersDetail[apiParams.userName].address;
+  if(contractDetail.address && contractDetail.seller.address){
+    Helper.getContractInstance(contractDetail.address).then((resp)=>{
+      resp.instance.methods.createSellerBank(sellerBankAddress).send({from:contractDetail.seller.address}).then((response)=>{
+        contractDetail.sellerBank= usersDetail[apiParams.userName];
+        res.send({success:true})
+      })
+    }).catch((err)=>{
+      res.send({success:false});
+    })
+  }else {
+    res.send({success:false});
+  }
+})
+
 app.post('/updateStatus', jsonParser, async (req, res) => {
   var apiParams = req.body; 
   let response = await updateStatus(

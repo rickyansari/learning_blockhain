@@ -52,41 +52,50 @@ const statuses = [
    {
     'status' : false,
     'statusName' : 'MoneyReceived'
-  }
+  },
+  {
+    'status' : false,
+    'statusName' : 'AddSellerBank'
+}
 
 ];
 
 getCurrentStatus = async(contractInstance)=>{
-   let current_status =  await contractInstance.methods.status().call();
-  return{
-    currentStatus: current_status
-  }
+    let current_status =  await contractInstance.methods.status().call();
+    return{
+        currentStatus: current_status
+    }
 }
 
-getStatusList = (currentstatus, role )=>{
-  let statusList = statuses;
-  var priority;
-  for(var i=0;i< statusList.length;i++)
-  {
-    if(statusList[i].statusName == currentstatus )
-    {
-      priority = i;
-      break;
-    }  
-  }
-  priority = priority +1 ;
-  currentstatus = statusList[priority].statusName;
-  console.log('operations[role][currentstatus]',operations[role][currentstatus])
-  if (operations[role][currentstatus]){   
-    statusList[priority].status = true;
-  }
+getStatusList = (currentstatus, role , contractDetail)=>{
+    let statusList = Object.assign({}, statuses);
+    for(var i=0;i< Object.keys(statusList).length ;i++){
+        statusList[i].status = false;  
+    }
+    console.log('statusList : ', statusList);
+    var priority;
+    for(var i=0;i< Object.keys(statusList).length ;i++){
+        if(statusList[i].statusName == currentstatus ){
+            priority = i;
+            break;
+        }  
+    }
+    priority = priority +1 ;
+    currentstatus = statusList[priority].statusName;
+    if( (currentstatus === "LOCPresentedForValidation" )
+        && (role === 'seller') 
+        && (contractDetail.sellerBank === null)){                    
+             statusList[8].status = true;  
+    }else if(operations[role][currentstatus]){   
+        statusList[priority].status = true;
+    }
     return{
       statusList: statusList
     }
 }
 
 updateStatus = (contractDetail, updtaedStatus, user, contractsDetail)=>{
-  return Helper.getContractInstance(contractDetail.address).then((response) => {
+    return Helper.getContractInstance(contractDetail.address).then((response) => {
     var instance = response.instance;
     let updateFunctionName;
     switch (updtaedStatus) {
@@ -94,8 +103,14 @@ updateStatus = (contractDetail, updtaedStatus, user, contractsDetail)=>{
             updateFunctionName = 'updateLocPresented';
             break;
         case 'LOCPresentedForValidation':
-            updateFunctionName = 'updateValidation';
-            break;
+        {
+            if(contractDetail.sellerBank){
+                updateFunctionName = 'updateValidation';
+                break; 
+            }else{
+                return{ success: false}
+            }
+        }
         case 'LOCValidated':
             updateFunctionName = 'updateValidated';	
             break;
@@ -116,14 +131,12 @@ updateStatus = (contractDetail, updtaedStatus, user, contractsDetail)=>{
     }
     return instance.methods[updateFunctionName]().send({from: user.address}).then(async ()=>{
         let status = await instance.methods.getContractStatus().call();
-        console.log("status", status);
-        // let response = await getDealDetails( contractDetail.name, user.name, contractsDetail);
         return{
-          success : true,
+           success : true,
         }   
       }).catch((err)=>{
         return {
-          success: false
+           success: false
         }
       })
   })

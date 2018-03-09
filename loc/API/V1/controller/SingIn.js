@@ -1,7 +1,7 @@
 var {usersDetail} = require('../UsersDetail');
 var Helper = require('../Helper');
-const inValidStatusForSeller = [];
-const inValidStatusForSellerBank = [];
+const inValidStatusForSeller = ['LocCreated'];
+const inValidStatusForSellerBank = ['LocCreated', 'LOCPresentedToSeller'];
 
 verifyUser = (params)=>{
   if(params.userName && usersDetail[params.userName]){
