@@ -57,6 +57,7 @@ app.post('/addSellerBank', jsonParser, async (req, res) => {
     Helper.getContractInstance(contractDetail.address).then((resp)=>{
       resp.instance.methods.createSellerBank(sellerBankAddress).send({from:contractDetail.seller.address}).then((response)=>{
         contractDetail.sellerBank= usersDetail[apiParams.userName];
+		console.log(contractsDetail);
         res.send({success:true})
       })
     }).catch((err)=>{

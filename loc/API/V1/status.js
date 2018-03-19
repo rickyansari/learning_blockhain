@@ -23,39 +23,48 @@ const statuses = [
 
    {
     'status' : false,
-    'statusName' : 'LocCreated'
+    'statusName' : 'LocCreated',
+	'buttonName' : 'Loc Created'
   },
    {
     'status' : false,
-    'statusName' : 'LOCPresentedToSeller'
+    'statusName' : 'LOCPresentedToSeller',
+	'buttonName' : 'Present LOC To Seller'
   },
    {
     'status' : false,
-    'statusName' : 'LOCPresentedForValidation'
+    'statusName' : 'LOCPresentedForValidation',
+	'buttonName' : 'Present LOC For Validation'
   },
    {
     'status' : false,
-    'statusName' : 'LOCValidated'
+    'statusName' : 'LOCValidated',
+	'buttonName' : 'LOC Validated'
   },
    {
     'status' : false,
-    'statusName' : 'GoodsDispatched'
+    'statusName' : 'GoodsDispatched',
+	'buttonName' : 'Goods Dispatched'
   },
    {
     'status' : false,
-    'statusName' : 'GoodsReceived'
+    'statusName' : 'GoodsReceived',
+	'buttonName' : 'Goods Received'
   },
    {
     'status' : false,
-    'statusName' : 'MoneyTrasnferred'
+    'statusName' : 'MoneyTrasnferred',
+	'buttonName' : 'Money Transfered'
   },
    {
     'status' : false,
-    'statusName' : 'MoneyReceived'
+    'statusName' : 'MoneyReceived',
+	'buttonName' : 'Money Received'
   },
   {
     'status' : false,
-    'statusName' : 'AddSellerBank'
+    'statusName' : 'AddSellerBank',
+	'buttonName' : 'Add Seller Bank'
 }
 
 ];
@@ -68,8 +77,8 @@ getCurrentStatus = async(contractInstance)=>{
 }
 
 getStatusList = (currentstatus, role , contractDetail)=>{
-    let statusList = Object.assign({}, statuses);
-    for(var i=0;i< Object.keys(statusList).length ;i++){
+    let statusList =statuses;
+    for(var i=0;i< statusList.length ;i++){
         statusList[i].status = false;  
     }
     console.log('statusList : ', statusList);

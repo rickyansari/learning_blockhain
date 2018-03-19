@@ -13,11 +13,21 @@ getDealDetails = async(contractName, user, contractsDetail)=>{
 		let role = getRole(contractName, user, contractsDetail).role;
 		console.log('role', role);
 		let buttonList = Status.getStatusList(contractStatus, role, contractDetail).statusList;
+		let sellerBankName;
+		if(contractDetail.sellerBank)
+				sellerBankName = contractDetail.sellerBank.name;
+		else
+			sellerBankName = ""
 			dealDetails = {
 				'contractName' : contractName,
+				'buyer' : contractDetail.buyer.name,
+				'seller' : contractDetail.seller.name,
+				'buyerBank' : contractDetail.buyerBank.name,
+				'sellerBank' : sellerBankName,
 				'locDocument' : contractDetail.locDocument,
 				'locDocumentHash' : locDocumentHash,
 				'currentStatus' : contractStatus,
+				'sellerBankAdded' : buttonList[8].status,
 				'buttonList' : buttonList
 			}
 			console.log('dealDetails : ',dealDetails )
