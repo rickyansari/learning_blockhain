@@ -10,20 +10,22 @@ createContract= (usersDetail, contractsDetail, apiData)=>{
       buyer: buyer.address,
       seller: seller.address,
       locDocument: apiData.locDocument,
+      contractName: apiData.contractName
     }
     Helper.deployContract(params).then((response)=>{
       if(response.deployed_contract_instance.options.address){
-        let contract_name = 'Contract' + Object.keys(contractsDetail.contractsDetail).length;
-        let contract_detail= {
-          address: response.deployed_contract_instance.options.address,
-          name: contract_name,
-          buyer:buyer,
-          seller:seller,
-          buyerBank:buyerBank,
-          sellerBank:null,
-          locDocument:params.locDocument,
-        }
-        contractsDetail.contractsDetail[contract_name] = contract_detail;
+//        let contract_name = 'Contract' + Object.keys(contractsDetail.contractsDetail).length;
+          let contract_name = params.contractName;  
+          let contract_detail= {
+            address: response.deployed_contract_instance.options.address,
+            name: contract_name,
+            buyer:buyer,
+            seller:seller,
+            buyerBank:buyerBank,
+            sellerBank:null,
+            locDocument:params.locDocument,
+            }
+          contractsDetail.contractsDetail[contract_name] = contract_detail;
         Helper.writeContractsDetailToFile(contractsDetail)
         .then((response)=>{
           fulfill({success: true});

@@ -60,12 +60,7 @@ const statuses = [
     'status' : false,
     'statusName' : 'MoneyReceived',
 	'buttonName' : 'Money Received'
-  },
-  {
-    'status' : false,
-    'statusName' : 'AddSellerBank',
-	'buttonName' : 'Add Seller Bank'
-}
+  }
 
 ];
 
@@ -82,44 +77,57 @@ getStatusList = (currentstatus, role , contractDetail)=>{
         statusList[i].status = false;  
     }
     console.log('statusList : ', statusList);
-    var priority;
-    for(var i=0;i< Object.keys(statusList).length ;i++){
-        if(statusList[i].statusName == currentstatus ){
-            priority = i;
-            break;
-        }  
+    var statusIndexResponse = getStatusIndex(currentstatus);
+    if(statusIndexResponse.success)
+    {
+        var priority = statusIndexResponse.index;
+        priority = priority +1 ;
+        if(priority < statusList.length)
+        {
+            currentstatus = statusList[priority].statusName;
+            if(operations[role][currentstatus]){   
+                statusList[priority].status = true;
+             }
+        }
     }
-    priority = priority +1 ;
-    currentstatus = statusList[priority].statusName;
-    if( (currentstatus === "LOCPresentedForValidation" )
-        && (role === 'seller') 
-        && (contractDetail.sellerBank === null)){                    
-             statusList[8].status = true;  
-    }else if(operations[role][currentstatus]){   
-        statusList[priority].status = true;
-    }
+ //   if( (currentstatus === "LOCPresentedForValidation" )
+  //      && (role === 'seller') 
+  //      && (contractDetail.sellerBank === null)){                    
+  //           statusList[8].status = true;  
+ //   }
+       
     return{
       statusList: statusList
     }
 }
 
-updateStatus = (contractDetail, updtaedStatus, user, contractsDetail)=>{
-    return Helper.getContractInstance(contractDetail.address).then((response) => {
+getStatusIndex = (currentstatus)=>{
+   
+    for(var i=0;i< statuses.length ;i++){
+        if(statuses[i].statusName == currentstatus ){
+            return {
+                success : true,
+                index: i
+             }
+        }  
+    }
+    return {
+        success: false
+     }
+}
+updateStatus = (contractDetail, updtaedStatus, user, id, contractsDetail)=>{
+    return Helper.getContractInstance(contractDetail.address).then(async (response) => {
     var instance = response.instance;
+    let current_status =  await instance.methods.getContractStatus().call();
     let updateFunctionName;
+    var shipmentOrTransactionId = id; 
     switch (updtaedStatus) {
         case 'LOCPresentedToSeller':
             updateFunctionName = 'updateLocPresented';
             break;
-        case 'LOCPresentedForValidation':
-        {
-            if(contractDetail.sellerBank){
-                updateFunctionName = 'updateValidation';
-                break; 
-            }else{
-                return{ success: false}
-            }
-        }
+        case 'LOCPresentedForValidation':                  
+            updateFunctionName = 'updateValidation';
+            break;   
         case 'LOCValidated':
             updateFunctionName = 'updateValidated';	
             break;
@@ -138,8 +146,33 @@ updateStatus = (contractDetail, updtaedStatus, user, contractsDetail)=>{
         default:
             return{success:false}
     }
-    return instance.methods[updateFunctionName]().send({from: user.address}).then(async ()=>{
+    if(updtaedStatus == "GoodsDispatched")
+    {
+         instance.methods.setShipmentId(shipmentOrTransactionId).send({from: user.address}).then((response)=>{
+            console.log('set shipment id response:', response);           
+        }).catch((err)=>{
+        return {
+           success: false
+        }
+      })
+    }
+    if(updtaedStatus == "MoneyTrasnferred")
+    {
+         instance.methods.setTransactionId(shipmentOrTransactionId).send({from: user.address}).then((response)=>{
+            console.log('set transaction id response:', response);           
+        }).catch((err)=>{
+        return {
+           success: false
+        }
+      })
+    }
+    return instance.methods[updateFunctionName]().send({from: user.address}).then(async (response)=>{
+ //      console.log(response);
         let status = await instance.methods.getContractStatus().call();
+        if(current_status == status)
+            return{
+                success : false,
+            } 
         return{
            success : true,
         }   
@@ -154,5 +187,6 @@ updateStatus = (contractDetail, updtaedStatus, user, contractsDetail)=>{
 module.exports ={
   getCurrentStatus: getCurrentStatus,
   getStatusList: getStatusList,
-  updateStatus:updateStatus
+  updateStatus: updateStatus,
+  getStatusIndex: getStatusIndex
 }
