@@ -10,6 +10,8 @@ getDealDetails = async(contractName, user, contractsDetail)=>{
 	return Helper.getContractInstance(contractDetail.address).then(async (response) => {
 		let contractStatus = await response.instance.methods.getContractStatus().call();
 		let locDocumentHash = await response.instance.methods.getLocDocumentHash().call();
+		let shipmentId = await response.instance.methods.getShipmentId().call();
+		let transactionId = await response.instance.methods.getTransactionId().call();
 		let role = getRole(contractName, user, contractsDetail).role;
 		console.log('role', role);
 		let buttonList = Status.getStatusList(contractStatus, role, contractDetail).statusList;
@@ -18,7 +20,7 @@ getDealDetails = async(contractName, user, contractsDetail)=>{
 				sellerBankName = contractDetail.sellerBank.name;
 		else
 			sellerBankName = ""
-			dealDetails = {
+		dealDetails = {
 				'contractName' : contractName,
 				'buyer' : contractDetail.buyer.name,
 				'seller' : contractDetail.seller.name,
@@ -27,7 +29,8 @@ getDealDetails = async(contractName, user, contractsDetail)=>{
 				'locDocument' : contractDetail.locDocument,
 				'locDocumentHash' : locDocumentHash,
 				'currentStatus' : contractStatus,
-				'sellerBankAdded' : buttonList[8].status,
+				'shipmentId' : shipmentId,
+				'transactionId' : transactionId,
 				'buttonList' : buttonList
 			}
 			console.log('dealDetails : ',dealDetails )
@@ -68,7 +71,8 @@ getRole = (contractName, userName, contractsDetail)  =>{
   }
 }
 
-module.exports ={
+module.exports =
+{
   getRole: getRole,
   getDealDetails: getDealDetails
   }

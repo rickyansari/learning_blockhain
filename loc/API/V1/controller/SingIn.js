@@ -6,7 +6,9 @@ const inValidStatusForSellerBank = ['LocCreated', 'LOCPresentedToSeller'];
 verifyUser = (params)=>{
   if(params.userName && usersDetail[params.userName]){
     if((usersDetail[params.userName].password === params.password)){
-      return{ success: true }
+      return{ success: true,
+				'role': usersDetail[params.userName].role
+				}
     }
   }
   return {success: false};

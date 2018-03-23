@@ -7,6 +7,10 @@ contract LineOfCredit {
   address private seller;
   bytes32 private loc_document_hash;
   string private status;
+  string private shipmentId;
+  string private transactionId;
+  enum Statuses { GoLeft, GoRight, GoStraight, SitStill }
+  Statuses private currentStatus;
   event LogStatusChange(string new_status);
 
   /* Constructor function */
@@ -16,6 +20,7 @@ contract LineOfCredit {
     seller = seller_address;
     storetLocDocumentHash(loc_document);
     status = "LocCreated";
+    currentStatus = Statuses.GoLeft;
   }
 
   function getLocDocumentHash()public view returns(bytes32) {
@@ -25,7 +30,16 @@ contract LineOfCredit {
   function getContractStatus()public view returns(string) {
     return status;
   }
+   function getCurrentStatus()public view returns(uint) {
+    return uint(currentStatus);
+  }
+function getShipmentId()public view returns(string) {
+    return shipmentId;
+  }
 
+  function getTransactionId()public view returns(string) {
+    return transactionId;
+  }
   function storetLocDocumentHash(string loc_document) private {
     loc_document_hash = getProof(loc_document);
   }
@@ -34,6 +48,11 @@ contract LineOfCredit {
     return sha256(document);
   }
 
+  function verifyLocDocument(string locDoc) public view returns(bool) {
+    if (getLocDocumentHash() == getProof(locDoc))
+      return true;
+    return false;
+  }
   modifier onlyBuyerBank(){
     require(msg.sender == buyer_bank);
     _;
@@ -59,40 +78,61 @@ contract LineOfCredit {
     LogStatusChange(status);
   }
 
+  function compareStrings (string a, string b) private pure returns (bool) {
+       return keccak256(a) == keccak256(b);
+   }
 
- 
   function updateLocPresented() public onlyBuyer {
-    status = "LOCPresentedToSeller";
+    if (compareStrings(status, "LocCreated"))
+      status = "LOCPresentedToSeller";
     LogStatusChange(status);
   }
 
   function updateValidation() public onlySeller {
-    status = "LOCPresentedForValidation";
+    if (seller_bank != address(0)) {
+      if (compareStrings(status, "LOCPresentedToSeller"))
+         status = "LOCPresentedForValidation";
     LogStatusChange(status);
+    }
   }
 
   function updateValidated() public onlySellerBank {
-    status = "LOCValidated";
+   
+      if (compareStrings(status, "LOCPresentedForValidation"))
+         status = "LOCValidated";
     LogStatusChange(status);
   }
 
   function updateGoodsDispatched() public onlySeller {
-    status = "GoodsDispatched";
+    if (compareStrings(status, "LOCValidated")) 
+      status = "GoodsDispatched";
     LogStatusChange(status);
   }
 
+function setShipmentId(string shipid) public onlySeller {
+    shipmentId = shipid;
+    LogStatusChange(status);
+}
+
   function updateGoodsReceived() public onlyBuyer {
-    status = "GoodsReceived";
+    if (compareStrings(status, "GoodsDispatched"))
+      status = "GoodsReceived";
     LogStatusChange(status);
   }
 
   function updateMoneyTransferred() public onlyBuyerBank {
-    status = "MoneyTrasnferred";
+    if (compareStrings(status, "GoodsReceived"))
+      status = "MoneyTrasnferred";
     LogStatusChange(status);
   }
 
+function setTransactionId(string transcid) public onlyBuyerBank {
+   transactionId = transcid;
+    LogStatusChange(status);
+  }
   function updateMoneyReceived() public onlySellerBank {
-    status = "MoneyReceived";
+    if (compareStrings(status, "MoneyTrasnferred"))
+      status = "MoneyReceived";
     LogStatusChange(status);
   }
 }

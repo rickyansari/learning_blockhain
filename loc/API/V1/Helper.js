@@ -18,8 +18,17 @@ deployContract = async(params )=>{
   console.log("params", params);
   let deployed_contract_instance = await new web3.eth.Contract(JSON.parse(interface))
     .deploy({data: bytecode, arguments:[params.buyer, params.seller, params.locDocument]})
-    .send({from: params.contractInitializer, gas:'1000000'})
-  return{
+    .send({from: params.contractInitializer, gas:'1900000'}).on('transactionHash', function(hash){
+      web3.eth.getTransaction(hash)
+.then(response=>{
+ // console.log(response);
+});
+
+//      console.log(hash);
+})
+    let contractStatus = await deployed_contract_instance.methods.getCurrentStatus().call(); 
+    console.log(contractStatus);
+    return{
     deployed_contract_instance: deployed_contract_instance
   }
 }
