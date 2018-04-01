@@ -1,11 +1,27 @@
-const ganache = require('ganache-cli');
+// const ganache = require('ganache-cli');
+// const Web3 = require('web3'); //Gives constructor function used to get web3 instance.
+// const provider = ganache.provider();
+// const web3 = new Web3(provider);
+// const fs = require('fs');
+// const path = require('path');
+
+// const { interface , bytecode } = require('../../compile');
+
+const HDWalletProvider = require('truffle-hdwallet-provider');
 const Web3 = require('web3'); //Gives constructor function used to get web3 instance.
-const provider = ganache.provider();
-const web3 = new Web3(provider);
 const fs = require('fs');
 const path = require('path');
-
 const { interface , bytecode } = require('../../compile');
+const ENV = require("../../ENV");
+console.log(ENV);
+
+const provider = new HDWalletProvider(
+  'call glow acoustic vintage front ring trade assist shuffle mimic volume reject',
+  'https://rinkeby.infura.io/orDImgKRzwNrVCDrAk5Q'
+);
+
+const web3 = new Web3(provider);
+
 
 getAccounts =  async ()=>{
   let accounts =  await web3.eth.getAccounts();
