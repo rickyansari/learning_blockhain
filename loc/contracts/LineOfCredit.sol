@@ -122,7 +122,7 @@ function setShipmentId(string shipid) public onlySeller {
 
   function updateMoneyTransferred() public onlyBuyerBank {
     if (compareStrings(status, "GoodsReceived"))
-      status = "MoneyTrasnferred";
+      status = "MoneyTransferred";
     LogStatusChange(status);
   }
 
@@ -131,7 +131,7 @@ function setTransactionId(string transcid) public onlyBuyerBank {
     LogStatusChange(status);
   }
   function updateMoneyReceived() public onlySellerBank {
-    if (compareStrings(status, "MoneyTrasnferred"))
+    if (compareStrings(status, "MoneyTransferred"))
       status = "MoneyReceived";
     LogStatusChange(status);
   }

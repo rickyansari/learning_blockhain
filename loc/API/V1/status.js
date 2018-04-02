@@ -11,7 +11,7 @@ const operations = {
   },
   'buyerBank' : {
     'LocCreated' : '1',
-    'MoneyTrasnferred' : '7'
+    'MoneyTransferred' : '7'
   },
   'sellerBank' : {
     'LOCValidated' : '4',
@@ -53,8 +53,8 @@ const statuses = [
   },
    {
     'status' : false,
-    'statusName' : 'MoneyTrasnferred',
-	'buttonName' : 'Money Transfered'
+    'statusName' : 'MoneyTransferred',
+	'buttonName' : 'Money Transferred'
   },
    {
     'status' : false,
@@ -137,7 +137,7 @@ updateStatus = (contractDetail, updtaedStatus, user, id, contractsDetail)=>{
         case 'GoodsReceived':
             updateFunctionName = 'updateGoodsReceived';
             break;
-        case 'MoneyTrasnferred':
+        case 'MoneyTransferred':
             updateFunctionName = 'updateMoneyTransferred';	
             break;
         case 'MoneyReceived':
