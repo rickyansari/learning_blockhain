@@ -73,15 +73,45 @@ app.post('/updateStatus', jsonParser, async (req, res) => {
   let response = await updateStatus(
     contractsDetail.contractsDetail[apiParams.contractName], 
     apiParams.updatedStatus,
-    usersDetail[apiParams.userName],
+    usersDetail[apiParams.userName],apiParams.shipmentOrTransactionId,
     contractsDetail
   );
   if(response.success){
-    let dealDetail = await getDealDetails( contractsDetail.contractsDetail[apiParams.contractName].name, apiParams.userName, contractsDetail);
+    let dealDetail = await getDealDetails(contractsDetail.contractsDetail[apiParams.contractName].name, 
+      apiParams.userName, contractsDetail);
     res.send(dealDetail);
   }else{
     res.send(response)
   }
+})
+
+
+app.post('/validateContractName',jsonParser, async (req, res)=> {
+  var apiParams = req.body;
+  let response = {	"isExists": false};
+  	if(contractsDetail.contractsDetail[apiParams.contractName])
+	    {
+		    console.log('in if loop',contractsDetail.contractsDetail[apiParams.contractName]);
+        response["isExists"] =  true;
+			
+	    }
+  //let response =  validateContractName( apiParams.contractName, contractsDetail);
+  console.log('response is : \n',response)
+  res.send(response)
+})
+
+app.post('/verifyLoc',jsonParser, async (req, res)=> {
+  var apiParams = req.body;
+  if(contractsDetail.contractsDetail[apiParams.contractName]){
+    Helper.getContractInstance(contractsDetail.contractsDetail[apiParams.contractName].address).then(async (response)=>{
+      let result = await response.instance.methods.verifyLocDocument(apiParams.locDocument).call();
+      res.send({ success: result });
+    }).catch((err)=>{
+      res.send({ success: false });
+    })
+  }else{
+    res.send({ success: false });
+  }		  
 })
 
 app.get('/user', async (req, res)=> {
