@@ -166,7 +166,10 @@ updateStatus = (contractDetail, updtaedStatus, user, id, contractsDetail)=>{
         }
       })
     }
-    return instance.methods[updateFunctionName]().send({from: user.address}).then(async (response)=>{
+
+
+    let serializedTx = Helper.getSignedTransactionData(user.address);
+    return instance.methods[updateFunctionName]().sendSignedTransaction('0x' + serializedTx.toString('hex')).then(async (response)=>{
  //      console.log(response);
         let status = await instance.methods.getContractStatus().call();
         if(current_status == status)

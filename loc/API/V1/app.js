@@ -22,6 +22,8 @@ var contractsDetail = {'contractsDetail':{}};
 //   })
 // });
 
+Helper.isUnlocked(usersDetail.ankit.address);
+
 app.post('/signIn', jsonParser, async (req, res)=> {
   var params = req.body;
   let response = verifyUser(params);

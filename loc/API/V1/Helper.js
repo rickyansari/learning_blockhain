@@ -7,6 +7,7 @@
 
 // const { interface , bytecode } = require('../../compile');
 
+var Tx = require('ethereumjs-tx');
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const Web3 = require('web3'); //Gives constructor function used to get web3 instance.
 const fs = require('fs');
@@ -16,9 +17,50 @@ const { interface , bytecode } = require('../../compile');
 // console.log(ENV);
 
 const provider = new HDWalletProvider(
+  "express wide carry cash arena surround wife saddle grow nose light grocery",
+  "https://rinkeby.infura.io/ALM3eEu1XllO1tzuejl0"
   );
 
 const web3 = new Web3(provider);
+
+
+getSignedTransactionData = (address)=>{
+  var privateKey = new Buffer('bb2505f150579305f35083492678d5d94f18870126db69b9cbf247d349f832fa', 'hex')
+  
+  var rawTx = {
+    nonce: '0x00',
+    gasPrice: '0x09184e72a000',
+    gasLimit: '0x2710',
+    to: '0x0000000000000000000000000000000000000000',
+    value: '0x00',
+    from: address,
+    data: '0x7f7465737432000000000000000000000000000000000000000000000000000000600057'
+  }
+  
+  var tx = new Tx(rawTx);
+  tx.sign(privateKey);
+  
+  var serializedTx = tx.serialize();
+  return serializedTx;
+}
+
+
+
+
+isUnlocked = async (address)=>{
+  try {
+      await web3.eth.sign("", address);
+  } catch (e) {
+      web3.eth.personal.unlockAccount(address, 'ricky@26790', 3000)
+      .then((resp)=>{
+        console.log("resp",resp);
+        return false;
+      }).catch((err)=>{
+        console.log("err",err);
+      })
+  }
+  return true;
+}
 
 
 getAccounts =  async ()=>{
@@ -121,4 +163,6 @@ module.exports ={
   getContractInstance: getContractInstance,
   readContractsDetailFromFile: readContractsDetailFromFile,
   writeContractsDetailToFile: writeContractsDetailToFile,
+  isUnlocked:isUnlocked,
+  getSignedTransactionData: getSignedTransactionData,
 }
