@@ -12,22 +12,38 @@ const Web3 = require('web3'); //Gives constructor function used to get web3 inst
 const fs = require('fs');
 const path = require('path');
 const { interface , bytecode } = require('../../compile');
-const ENV = require("../../ENV");
-console.log(ENV);
+// const ENV = require("../../ENV");
+// console.log(ENV);
 
 const provider = new HDWalletProvider(
-  'call glow acoustic vintage front ring trade assist shuffle mimic volume reject',
-  'https://rinkeby.infura.io/orDImgKRzwNrVCDrAk5Q'
-);
+  );
 
 const web3 = new Web3(provider);
 
 
 getAccounts =  async ()=>{
   let accounts =  await web3.eth.getAccounts();
-  return {
-    accounts: accounts
-  }
+  //   let acoount_count = 10;
+  //   let accounts = [];
+  //    while(acoount_count){
+  //     let account = web3.eth.accounts.create("sdjhgsadhgjasjgsjdgajsgjsagdjsagdjhagdjgwe786678#s6dw");
+  //     // web3.eth.personal.newAccount('!@superpassword')
+  //     // .then((resp)=>{
+  //     //   console.log(resp)
+  //     //   accounts.push(resp);
+  //     // }).catch((err)=>{
+  //     //   console.log(err);
+  //     // })
+  //     // let account = web3.eth.accounts.create("sdjhgsadhgjasjgsjdgajsgjsagdjsagdjhagdjgwe786678#s6dw");
+  //     //  acoount_count--;
+  // }
+    return({
+      accounts: accounts
+    })
+    //   accounts: accounts
+    // }
+    // let accounts =  await web3.eth.getAccounts();
+    // return {
 }
 
 deployContract = async(params )=>{

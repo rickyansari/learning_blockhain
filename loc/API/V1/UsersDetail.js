@@ -3,6 +3,7 @@ const usersDetail ={
     name: 'sbi',
     password: 'sbi@123',
     role:'bank',
+    address:"0x4De66Dfa9FD18112f90A592399F25696113D66e1"
   },
   icici:{
     name: 'icici',
@@ -13,6 +14,7 @@ const usersDetail ={
     name:'axis',
     password: 'axis@123',
     role:'bank',
+    address:"0x95Ea08965b171B37C3Ce93bB2d448315cf9C5f10"
   },
   ing:{
     name:'ing',
@@ -23,6 +25,7 @@ const usersDetail ={
     name:'ankit',
     password:'ankit@123',
     role:'user',
+    address:"0x84992C91FF43e72Df570d1Ba1bdf7579Dce044Db"
   },
   anupreksha:{
     name:'anupreksha',
@@ -33,6 +36,7 @@ const usersDetail ={
     name:'ramana',
     password:'ramana@123',
     role:'user',
+    address:"0x113f8811db9D41095256944df5fc583a6E92E602"
   },
   kishore:{
     name:'kishore',
