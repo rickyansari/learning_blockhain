@@ -14,13 +14,10 @@ var { usersDetail } = require('./UsersDetail');
 var accounts;
 var contractsDetail = {'contractsDetail':{}};
 
-// Helper.getAccounts()
-// .then((response)=>{
-//   accounts = response.accounts;
-//   Object.keys(usersDetail).map((user, index)=>{
-//     usersDetail[user].address = accounts[index];
-//   })
-// });
+accounts = Helper.getAccounts().accounts;
+Object.keys(usersDetail).map((user, index)=>{
+  usersDetail[user].address = accounts[index];
+})
 
 app.post('/signIn', jsonParser, async (req, res)=> {
   var params = req.body;
@@ -36,14 +33,6 @@ app.post('/getContracts', jsonParser, async (req, res)=> {
 })
 
 app.post('/createContract', jsonParser, async (req, res) => {
-  Helper.getAccounts()
-  .then((response)=>{
-    accounts = response.accounts;
-    Object.keys(usersDetail).map((user, index)=>{
-      usersDetail[user].address = accounts[index];
-    })
-  });
-
   var apiParams = req.body;
   let response = await createContract(usersDetail, contractsDetail, apiParams);
   res.send(response)
@@ -62,19 +51,23 @@ app.post('/addSellerBank', jsonParser, async (req, res) => {
   let contractDetail = contractsDetail.contractsDetail[apiParams.contractName];
   let sellerBankAddress = usersDetail[apiParams.userName].address;
   if(contractDetail.address && contractDetail.seller.address){
-    Helper.getContractInstance(contractDetail.address).then((resp)=>{
-      resp.instance.methods.createSellerBank(sellerBankAddress).send({from:contractDetail.seller.address}).then((response)=>{
+    let resp = Helper.getContractInstance(contractDetail.address);
+      resp.instance.createSellerBank(
+        sellerBankAddress,
+        {from:contractDetail.seller.address},
+        function(error, result){
+          if (!error){
+            console.log(result);
+          }
+        });
         contractDetail.sellerBank= usersDetail[apiParams.userName];
 		console.log(contractsDetail);
         res.send({success:true})
-      })
-    }).catch((err)=>{
-      res.send({success:false});
-    })
+   
   }else {
     res.send({success:false});
   }
-})
+});
 
 app.post('/updateStatus', jsonParser, async (req, res) => {
   var apiParams = req.body; 
@@ -123,7 +116,7 @@ app.post('/verifyLoc',jsonParser, async (req, res)=> {
 })
 
 app.get('/user', async (req, res)=> {
-  Helper.getContractInstance(contractsDetail.contractsDetail.Contract0.address).then((response)=>{
+  Helper.getContractInstance(contractsDetail.contractsDetail.contractName.address).then((response)=>{
     response.instance.methods.status().call().then((response)=>{
       console.log('response', response);
       res.send('Got a POST request')

@@ -7,11 +7,11 @@ getDealDetails = async(contractName, user, contractsDetail)=>{
 	let dealDetails = {	};
 	let contractDetail = contractsDetail.contractsDetail[contractName];
 	let buttonsList;
-	return Helper.getContractInstance(contractDetail.address).then(async (response) => {
-		let contractStatus = await response.instance.methods.getContractStatus().call();
-		let locDocumentHash = await response.instance.methods.getLocDocumentHash().call();
-		let shipmentId = await response.instance.methods.getShipmentId().call();
-		let transactionId = await response.instance.methods.getTransactionId().call();
+	 let response = Helper.getContractInstance(contractDetail.address);
+		let contractStatus =  response.instance.getContractStatus()
+		let locDocumentHash =  response.instance.getLocDocumentHash()
+		let shipmentId =  response.instance.getShipmentId()
+		let transactionId =  response.instance.getTransactionId()
 		let role = getRole(contractName, user, contractsDetail).role;
 		console.log('role', role);
 		let buttonList = Status.getStatusList(contractStatus, role, contractDetail).statusList;
@@ -38,11 +38,7 @@ getDealDetails = async(contractName, user, contractsDetail)=>{
 				success: true,
 				dealDetails: dealDetails
 			}
-	}).catch((err)=>{
-		return {
-			success: false
-		}
-	})
+	
 	// let contractInstance;
 	// Helper.getContractInstance(contractDetails.address).then((response)=>{
 

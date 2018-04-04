@@ -13,11 +13,11 @@ createContract= (usersDetail, contractsDetail, apiData)=>{
       contractName: apiData.contractName
     }
     Helper.deployContract(params).then((response)=>{
-      if(response.deployed_contract_instance.options.address){
+      if(response.deployed_contract_instance.address){
 //        let contract_name = 'Contract' + Object.keys(contractsDetail.contractsDetail).length;
           let contract_name = params.contractName;  
           let contract_detail= {
-            address: response.deployed_contract_instance.options.address,
+            address: response.deployed_contract_instance.address,
             name: contract_name,
             buyer:buyer,
             seller:seller,

@@ -22,23 +22,28 @@ getUserDetails = (userName, contractsDetail)=>{
       var indexOfLastContract = Object.keys(contractsDetail).length - 1;
       Object.keys(contractsDetail).map((contract, index)=>{
         let response = getContractNameAndRoleOfUser(userName, contractsDetail[contract])
-        .then((response)=>{
           if(response.success){
             data.push(response.data);
           }
           if(indexOfLastContract === index){
             fulfill(data);
-          }
-        })
+          }       
       })
     }else{
         fulfill(data);
       }
     })
     return promise.then((response) => {
-      return{
-        success: true,
-        data: response
+      if(response.length) {
+          return{
+            success: true,
+            data: response
+          }
+        } 
+        else {
+          return{
+            success: false        
+          }
       }
     }).catch((err)=>{
       console.log("error", err);
@@ -49,8 +54,8 @@ getUserDetails = (userName, contractsDetail)=>{
 }
 
 getContractNameAndRoleOfUser = (name, contract) => {
-  return Helper.getContractInstance(contract.address).then(async (response) => {
-    let contractStatus = await response.instance.methods.getContractStatus().call();
+  let contract_instance  = Helper.getContractInstance(contract.address).instance;
+    let contractStatus =  contract_instance.getContractStatus();
     console.log("contractStatus", contractStatus);
     let success = false;
     let role;
@@ -79,7 +84,6 @@ getContractNameAndRoleOfUser = (name, contract) => {
     } else {
       return { success: false };
     }
-  });
 };
 
 module.exports = {

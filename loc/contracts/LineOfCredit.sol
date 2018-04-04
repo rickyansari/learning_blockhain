@@ -1,10 +1,10 @@
 pragma solidity ^0.4.17;
 
 contract LineOfCredit {
-  address private buyer_bank;
-  address private buyer;
-  address private seller_bank;
-  address private seller;
+  address public buyer_bank;
+  address public buyer;
+  address public seller_bank;
+  address public seller;
   bytes32 private loc_document_hash;
   string private status;
   string private shipmentId;
@@ -73,7 +73,7 @@ function getShipmentId()public view returns(string) {
     _;
   }
 
-  function createSellerBank(address seller_bank_addresss) public onlySeller { 
+  function createSellerBank(address seller_bank_addresss) public onlyBuyerBank { 
     seller_bank = seller_bank_addresss;
     LogStatusChange(status);
   }

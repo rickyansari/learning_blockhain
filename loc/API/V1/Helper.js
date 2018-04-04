@@ -1,40 +1,64 @@
 // const ganache = require('ganache-cli');
 const Web3 = require('web3'); //Gives constructor function used to get web3 instance.
 // const provider = ganache.provider();
-const provider =  new Web3.providers.HttpProvider("http://127.0.0.1:54086");
+const provider= new Web3.providers.HttpProvider("http://localhost:8545")
 const web3 = new Web3(provider);
 const fs = require('fs');
 const path = require('path');
 
 const { interface , bytecode } = require('../../compile');
-
-getAccounts =  async ()=>{
-  let accounts =  await web3.eth.getAccounts();
+var code = '0x'+ bytecode;
+getAccounts = ()=>{
+  let accounts = web3.eth.accounts;
   return {
     accounts: accounts
   }
 }
 
 deployContract = async(params )=>{
-  let deployed_contract_instance = await new web3.eth.Contract(JSON.parse(interface))
-    .deploy({data: bytecode, arguments:[params.buyer, params.seller, params.locDocument]})
-    .send({from: params.contractInitializer, gas:'1900000'}).on('transactionHash', function(hash){
-    web3.eth.getTransaction(hash)
-      .then(response=>{
-      // console.log(response);
-    });
-
-    //      console.log(hash);
-    })
-    let contractStatus = await deployed_contract_instance.methods.getCurrentStatus().call(); 
-    console.log(contractStatus);
+  let sampleContract = web3.eth.contract(JSON.parse(interface));
+  let gasEstimate = web3.eth.estimateGas({data: code});
+  
+  var promise = new Promise(function(fulfill, reject) {
+    sampleContract.new([
+      params.buyer,
+      params.seller,
+      params.locDocument],
+      {from: params.contractInitializer, gas: gasEstimate, data: code}, 
+      function(error, contract){
+        if(!error) {
+          if(!contract.address) {
+            console.log("Contract transaction send: TransactionHash: " + contract.transactionHash + " waiting to be mined...");
+          }else {
+            console.log("Contract mined! Address: " + contract.address);
+            console.log(contract);
+            fulfill({
+              success : true,
+              deployed_contract_instance : contract
+            })        
+          }     
+        }else { 
+          console.log("error", error);
+          reject ({
+            success : false
+          })    
+        }  
+      }
+    )
+  })
+  
+  return promise.then((response) => {
+    return response;
+  }).catch((err)=>{
+    console.log("error", err);
     return{
-    deployed_contract_instance: deployed_contract_instance
-  }
+      success: false
+    }
+  })   
 }
 
-getContractInstance = async(contractAddress)=>{
-  let instance = await new web3.eth.Contract(JSON.parse(interface), contractAddress);
+getContractInstance = (contractAddress)=>{
+  let instance = web3.eth.contract(JSON.parse(interface)).at(contractAddress);
   return{
     instance: instance
   }
@@ -52,17 +76,17 @@ readContractsDetailFromFile = ()=>{
       }
     })
   })
-  return promise.then((response) => {
-    return{
-      success: true,
-      contractsDetail: response
-    }
-  }).catch((err)=>{
-    console.log("error", err);
-    return{
-      success: false
-    }
-  })
+    return promise.then((response) => {
+      return{
+        success: true,
+        contractsDetail: response
+      }
+    }).catch((err)=>{
+      console.log("error", err);
+      return{
+        success: false
+      }
+    })
 }
 
 writeContractsDetailToFile= (contractsDetail)=>{
