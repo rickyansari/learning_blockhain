@@ -14,13 +14,13 @@ var { usersDetail } = require('./UsersDetail');
 var accounts;
 var contractsDetail = {'contractsDetail':{}};
 
-Helper.getAccounts()
-.then((response)=>{
-  accounts = response.accounts;
-  Object.keys(usersDetail).map((user, index)=>{
-    usersDetail[user].address = accounts[index];
-  })
-});
+// Helper.getAccounts()
+// .then((response)=>{
+//   accounts = response.accounts;
+//   Object.keys(usersDetail).map((user, index)=>{
+//     usersDetail[user].address = accounts[index];
+//   })
+// });
 
 app.post('/signIn', jsonParser, async (req, res)=> {
   var params = req.body;
@@ -36,6 +36,14 @@ app.post('/getContracts', jsonParser, async (req, res)=> {
 })
 
 app.post('/createContract', jsonParser, async (req, res) => {
+  Helper.getAccounts()
+  .then((response)=>{
+    accounts = response.accounts;
+    Object.keys(usersDetail).map((user, index)=>{
+      usersDetail[user].address = accounts[index];
+    })
+  });
+
   var apiParams = req.body;
   let response = await createContract(usersDetail, contractsDetail, apiParams);
   res.send(response)
