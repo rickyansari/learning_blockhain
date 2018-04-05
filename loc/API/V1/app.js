@@ -51,19 +51,19 @@ app.post('/addSellerBank', jsonParser, async (req, res) => {
   let contractDetail = contractsDetail.contractsDetail[apiParams.contractName];
   let sellerBankAddress = usersDetail[apiParams.userName].address;
   if(contractDetail.address && contractDetail.seller.address){
-    let resp = Helper.getContractInstance(contractDetail.address);
-      resp.instance.createSellerBank(
-        sellerBankAddress,
-        {from:contractDetail.seller.address},
-        function(error, result){
-          if (!error){
-            console.log(result);
-          }
-        });
-        contractDetail.sellerBank= usersDetail[apiParams.userName];
-		console.log(contractsDetail);
-        res.send({success:true})
-   
+    var contractInstance = Helper.getContractInstance(contractDetail.address).instance;
+    contractInstance.instance.createSellerBank(
+      sellerBankAddress,
+      {from:contractDetail.seller.address},
+      function(error, result){
+        if (!error){
+          contractDetail.sellerBank =usersDetail[apiParams.userName];
+          console.log(contractDetail);
+          res.send({success:true})
+        }else{
+          res.send({success:false});
+        }
+    });
   }else {
     res.send({success:false});
   }
@@ -78,25 +78,23 @@ app.post('/updateStatus', jsonParser, async (req, res) => {
     contractsDetail
   );
   if(response.success){
-    let dealDetail = await getDealDetails(contractsDetail.contractsDetail[apiParams.contractName].name, 
-      apiParams.userName, contractsDetail);
+    let dealDetail = await getDealDetails(
+      contractsDetail.contractsDetail[apiParams.contractName].name, 
+      apiParams.userName, contractsDetail
+    );
     res.send(dealDetail);
   }else{
     res.send(response)
   }
-})
-
+});
 
 app.post('/validateContractName',jsonParser, async (req, res)=> {
   var apiParams = req.body;
-  let response = {	"isExists": false};
-  	if(contractsDetail.contractsDetail[apiParams.contractName])
-	    {
-		    console.log('in if loop',contractsDetail.contractsDetail[apiParams.contractName]);
-        response["isExists"] =  true;
-			
-	    }
-  //let response =  validateContractName( apiParams.contractName, contractsDetail);
+  let response = {"isExists": false};
+  if(contractsDetail.contractsDetail[apiParams.contractName]){
+	  console.log('in if loop',contractsDetail.contractsDetail[apiParams.contractName]);
+    response["isExists"] =  true;
+	}
   console.log('response is : \n',response)
   res.send(response)
 })

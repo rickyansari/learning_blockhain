@@ -1,13 +1,14 @@
 // const ganache = require('ganache-cli');
 const Web3 = require('web3'); //Gives constructor function used to get web3 instance.
 // const provider = ganache.provider();
-const provider= new Web3.providers.HttpProvider("http://localhost:8545")
+const provider= new Web3.providers.HttpProvider("http://localhost:8546")
 const web3 = new Web3(provider);
 const fs = require('fs');
 const path = require('path');
 
 const { interface , bytecode } = require('../../compile');
 var code = '0x'+ bytecode;
+
 getAccounts = ()=>{
   let accounts = web3.eth.accounts;
   return {
@@ -20,11 +21,11 @@ deployContract = async(params )=>{
   let gasEstimate = web3.eth.estimateGas({data: code});
   
   var promise = new Promise(function(fulfill, reject) {
-    sampleContract.new([
+    sampleContract.new(
       params.buyer,
       params.seller,
-      params.locDocument],
-      {from: params.contractInitializer, gas: gasEstimate, data: code}, 
+      params.locDocument,
+      {from: params.contractInitializer, gas: 2*gasEstimate, data: code}, 
       function(error, contract){
         if(!error) {
           if(!contract.address) {
