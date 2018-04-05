@@ -106,12 +106,9 @@ app.post('/validateContractName',jsonParser, async (req, res)=> {
 app.post('/verifyLoc',jsonParser, async (req, res)=> {
   var apiParams = req.body;
   if(contractsDetail.contractsDetail[apiParams.contractName]){
-    Helper.getContractInstance(contractsDetail.contractsDetail[apiParams.contractName].address).then(async (response)=>{
-      let result = await response.instance.methods.verifyLocDocument(apiParams.locDocument).call();
-      res.send({ success: result });
-    }).catch((err)=>{
-      res.send({ success: false });
-    })
+    var instance = Helper.getContractInstance(contractsDetail.contractsDetail[apiParams.contractName].address).instance;
+    let result =  instance.verifyLocDocument(apiParams.locDocument);
+    res.send({ success: result }); 
   }else{
     res.send({ success: false });
   }		  
