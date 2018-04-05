@@ -116,72 +116,83 @@ getStatusIndex = (currentstatus)=>{
      }
 }
 updateStatus = (contractDetail, updtaedStatus, user, id, contractsDetail)=>{
-    return Helper.getContractInstance(contractDetail.address).then(async (response) => {
-    var instance = response.instance;
-    let current_status =  await instance.methods.getContractStatus().call();
-    let updateFunctionName;
-    var shipmentOrTransactionId = id; 
-    switch (updtaedStatus) {
-        case 'LOCPresentedToSeller':
-            updateFunctionName = 'updateLocPresented';
-            break;
-        case 'LOCPresentedForValidation':                  
-            updateFunctionName = 'updateValidation';
-            break;   
-        case 'LOCValidated':
-            updateFunctionName = 'updateValidated';	
-            break;
-        case 'GoodsDispatched':
-            updateFunctionName = 'updateGoodsDispatched';	
-            break;
-        case 'GoodsReceived':
-            updateFunctionName = 'updateGoodsReceived';
-            break;
-        case 'MoneyTrasnferred':
-            updateFunctionName = 'updateMoneyTransferred';	
-            break;
-        case 'MoneyReceived':
-            updateFunctionName = 'updateMoneyReceived';	
-            break;
-        default:
-            return{success:false}
-    }
-    if(updtaedStatus == "GoodsDispatched")
-    {
-         instance.methods.setShipmentId(shipmentOrTransactionId).send({from: user.address}).then((response)=>{
-            console.log('set shipment id response:', response);           
-        }).catch((err)=>{
-        return {
-           success: false
+    var promise = new Promise(function(fulfill, reject) {
+        var instance =  Helper.getContractInstance(contractDetail.address).instance;
+        let current_status =   instance.getContractStatus()
+        let updateFunctionName;
+        var shipmentOrTransactionId = id; 
+        switch (updtaedStatus) {
+            case 'LOCPresentedToSeller':
+                updateFunctionName = 'updateLocPresented';
+                break;
+            case 'LOCPresentedForValidation':                  
+                updateFunctionName = 'updateValidation';
+                break;   
+            case 'LOCValidated':
+                updateFunctionName = 'updateValidated';	
+                break;
+            case 'GoodsDispatched':
+                updateFunctionName = 'updateGoodsDispatched';	
+                break;
+            case 'GoodsReceived':
+                updateFunctionName = 'updateGoodsReceived';
+                break;
+            case 'MoneyTrasnferred':
+                updateFunctionName = 'updateMoneyTransferred';	
+                break;
+            case 'MoneyReceived':
+                updateFunctionName = 'updateMoneyReceived';	
+                break;
+            default:
+                reject({success:false})
         }
-      })
-    }
-    if(updtaedStatus == "MoneyTrasnferred")
-    {
-         instance.methods.setTransactionId(shipmentOrTransactionId).send({from: user.address}).then((response)=>{
-            console.log('set transaction id response:', response);           
-        }).catch((err)=>{
-        return {
-           success: false
+        if(updtaedStatus == "GoodsDispatched")
+        {
+            instance.setShipmentId(shipmentOrTransactionId,
+                {from:user.address},
+                function(error, result){
+                    if (!error){
+                        console.log('set shipment id response:', response);         
+                    }else{
+                        reject({success:false})                 
+                    }       
+                })
         }
-      })
-    }
-    return instance.methods[updateFunctionName]().send({from: user.address}).then(async (response)=>{
- //      console.log(response);
-        let status = await instance.methods.getContractStatus().call();
-        if(current_status == status)
-            return{
-                success : false,
-            } 
-        return{
-           success : true,
-        }   
-      }).catch((err)=>{
-        return {
-           success: false
+        if(updtaedStatus == "MoneyTrasnferred")
+        {
+            instance.setTransactionId(shipmentOrTransactionId,
+                {from:user.address},
+                function(error, result){
+                    if (!error){
+                        console.log('set transaction id response:', response);   
+                    }else{
+                        reject({success:false})
+                    }       
+                })
         }
-      })
-  })
+        instance[updateFunctionName]({from:user.address},
+            function(error, result){
+                if (!error){
+                    let status =  instance.getContractStatus();
+                    if(current_status == status){
+                        reject({success:false})
+                    }else{
+                        fullfill({success : true})
+                    }   
+                }else{
+                    reject({success:false})
+                }       
+        })
+    })
+    
+    return promise.then((response) => {
+      return response;
+    }).catch((err)=>{
+      console.log("error", err);
+      return{
+        success: false
+      }
+    })   
 }
 
 module.exports ={

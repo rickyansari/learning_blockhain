@@ -1,7 +1,7 @@
 // const ganache = require('ganache-cli');
 const Web3 = require('web3'); //Gives constructor function used to get web3 instance.
 // const provider = ganache.provider();
-const provider= new Web3.providers.HttpProvider("http://localhost:8546")
+const provider= new Web3.providers.HttpProvider("http://localhost:8545")
 const web3 = new Web3(provider);
 const fs = require('fs');
 const path = require('path');

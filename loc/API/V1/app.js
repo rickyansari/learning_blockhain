@@ -41,7 +41,7 @@ app.post('/createContract', jsonParser, async (req, res) => {
 app.post('/getDealDetails', jsonParser, async (req, res) => {
   var apiParams = req.body;
   console.log(apiParams, "q")
-  let response = await getDealDetails( apiParams.contractName, apiParams.userName, contractsDetail);
+  let response =  getDealDetails( apiParams.contractName, apiParams.userName, contractsDetail);
   console.log('response is : \n',response)
   res.send(response)
 })
@@ -52,7 +52,7 @@ app.post('/addSellerBank', jsonParser, async (req, res) => {
   let sellerBankAddress = usersDetail[apiParams.userName].address;
   if(contractDetail.address && contractDetail.seller.address){
     var contractInstance = Helper.getContractInstance(contractDetail.address).instance;
-    contractInstance.instance.createSellerBank(
+    contractInstance.createSellerBank(
       sellerBankAddress,
       {from:contractDetail.seller.address},
       function(error, result){
@@ -71,21 +71,25 @@ app.post('/addSellerBank', jsonParser, async (req, res) => {
 
 app.post('/updateStatus', jsonParser, async (req, res) => {
   var apiParams = req.body; 
-  let response = await updateStatus(
+  let response =  updateStatus(
     contractsDetail.contractsDetail[apiParams.contractName], 
     apiParams.updatedStatus,
     usersDetail[apiParams.userName],apiParams.shipmentOrTransactionId,
     contractsDetail
-  );
-  if(response.success){
-    let dealDetail = await getDealDetails(
-      contractsDetail.contractsDetail[apiParams.contractName].name, 
-      apiParams.userName, contractsDetail
-    );
-    res.send(dealDetail);
-  }else{
-    res.send(response)
-  }
+  ).then((response)=>{
+    if(response.success){
+      let dealDetail =  getDealDetails(
+        contractsDetail.contractsDetail[apiParams.contractName].name, 
+        apiParams.userName, contractsDetail
+      );
+      res.send(dealDetail);
+    }else{
+      res.send(response)
+    }
+  }).catch((err)=>{
+    res.send({ success: false });
+  });
+ 
 });
 
 app.post('/validateContractName',jsonParser, async (req, res)=> {

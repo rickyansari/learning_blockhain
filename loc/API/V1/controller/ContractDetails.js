@@ -3,7 +3,7 @@ const Status = require('../status');
 	
 
 
-getDealDetails = async(contractName, user, contractsDetail)=>{
+getDealDetails = (contractName, user, contractsDetail)=>{
 	let dealDetails = {	};
 	let contractDetail = contractsDetail.contractsDetail[contractName];
 	let buttonsList;
