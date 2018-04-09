@@ -117,8 +117,8 @@ getStatusIndex = (currentstatus)=>{
 }
 updateStatus = (contractDetail, updtaedStatus, user, id, contractsDetail)=>{
     var promise = new Promise(function(fulfill, reject) {
-        var instance =  Helper.getContractInstance(contractDetail.address).instance;
-        let current_status =   instance.getContractStatus()
+     instance =  Helper.getContractInstance(contractDetail.address).instance;
+        current_status =   instance.getContractStatus()
         let updateFunctionName;
         var shipmentOrTransactionId = id; 
         switch (updtaedStatus) {
@@ -152,7 +152,7 @@ updateStatus = (contractDetail, updtaedStatus, user, id, contractsDetail)=>{
                 {from:user.address},
                 function(error, result){
                     if (!error){
-                        console.log('set shipment id response:', response);         
+                        console.log('set shipment id response:', result);         
                     }else{
                         reject({success:false})                 
                     }       
@@ -164,24 +164,37 @@ updateStatus = (contractDetail, updtaedStatus, user, id, contractsDetail)=>{
                 {from:user.address},
                 function(error, result){
                     if (!error){
-                        console.log('set transaction id response:', response);   
+                        console.log('set transaction id response:', result);   
                     }else{
                         reject({success:false})
                     }       
                 })
         }
-        instance[updateFunctionName]({from:user.address},
-            function(error, result){
-                if (!error){
-                    let status =  instance.getContractStatus();
-                    if(current_status == status){
-                        reject({success:false})
-                    }else{
-                        fullfill({success : true})
-                    }   
-                }else{
-                    reject({success:false})
-                }       
+        instance[updateFunctionName]({from:user.address}, function(error, response){
+            var loop_count = 5;
+            if (!error){
+                var intervalObject = setInterval(function () { 
+                    instance.getContractStatus(function(err, resp){
+                        if(!err){
+                            let updated_status =  resp;
+                            if(current_status === updated_status){
+                                --loop_count;
+                                if(!loop_count){
+                                    clearInterval(intervalObject);
+                                    reject({success:false})
+                                }
+                            }else{  
+                                clearInterval(intervalObject);
+                                fulfill({success : true})
+                            }   
+                        }else{
+                            reject({success:false})
+                        }       
+                    })
+                }, 5000); 
+            }else{
+                reject({success:false})
+            }
         })
     })
     
