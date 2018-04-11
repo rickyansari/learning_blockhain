@@ -9,8 +9,6 @@ contract LineOfCredit {
     string private status;
     string private shipmentId;
     string private transactionId;
-    enum Statuses { GoLeft, GoRight, GoStraight, SitStill }
-    Statuses private currentStatus;
     event LogStatusChange(string new_status);
 
     /* Constructor function */
@@ -20,7 +18,6 @@ contract LineOfCredit {
         seller = seller_address;
         storetLocDocumentHash(loc_document);
         status = "LocCreated";
-        currentStatus = Statuses.GoLeft;
     }
 
     function getLocDocumentHash()public view returns(bytes32) {
@@ -30,9 +27,7 @@ contract LineOfCredit {
     function getContractStatus()public view returns(string) {
         return status;
     }
-    function getCurrentStatus()public view returns(uint) {
-        return uint(currentStatus);
-    }
+ 
     function getShipmentId()public view returns(string) {
         return shipmentId;
     }
@@ -83,64 +78,74 @@ contract LineOfCredit {
         return keccak256(a) == keccak256(b);
     }
 
-    function updateLocPresented() public onlyBuyer returns (string) {
-        if (compareStrings(status, "LocCreated")){ 
+     
+
+    function updateLocPresented() public onlyBuyer {
+        
+        if (compareStrings(status, "LocCreated")) { 
             status = "LOCPresentedToSeller";
-            //LogStatusChange(status);
-            return status;
-        }
-        return "LocCreated";
+            
+            LogStatusChange(status);         
+        
+        }      
     }
 
-    function updateValidation() public onlySeller returns (string){
+    function updateValidation() public onlySeller {
         if (seller_bank != address(0)) {
-            if (compareStrings(status, "LOCPresentedToSeller")){
+            if (compareStrings(status, "LOCPresentedToSeller")) {
                 status = "LOCPresentedForValidation";
-                LogStatusChange(status);
-                return status;
+                LogStatusChange(status);              
             }
-            return "LOCPresentedToSeller";
+           
         }
-        return  "LOCPresentedToSeller";
+    
     }
 
     function updateValidated() public onlySellerBank {
-        if (compareStrings(status, "LOCPresentedForValidation"))
+        if (compareStrings(status, "LOCPresentedForValidation")) {
             status = "LOCValidated";
-        LogStatusChange(status);
+            LogStatusChange(status);
+        }
     }
 
     function updateGoodsDispatched() public onlySeller {
-        if (compareStrings(status, "LOCValidated")) 
+        if (compareStrings(status, "LOCValidated")) {
             status = "GoodsDispatched";
-        LogStatusChange(status);
+            LogStatusChange(status);
+        }
     }
 
     function setShipmentId(string shipid) public onlySeller {
-        shipmentId = shipid;
-        LogStatusChange(status);
+        if (compareStrings(status, "LOCValidated")) {
+            shipmentId = shipid;
+        }
     }
 
     function updateGoodsReceived() public onlyBuyer {
-        if (compareStrings(status, "GoodsDispatched"))
+        if (compareStrings(status, "GoodsDispatched")) {
             status = "GoodsReceived";
-        LogStatusChange(status);
+            LogStatusChange(status);
+        }
     }
 
     function updateMoneyTransferred() public onlyBuyerBank {
-        if (compareStrings(status, "GoodsReceived"))
+        if (compareStrings(status, "GoodsReceived")) {
             status = "MoneyTrasnferred";
-        LogStatusChange(status);
+            LogStatusChange(status);
+        }
     }
 
     function setTransactionId(string transcid) public onlyBuyerBank {
-        transactionId = transcid;
-        LogStatusChange(status);
+         if (compareStrings(status, "GoodsReceived")) {
+            transactionId = transcid;
+            LogStatusChange(status);
+         }
     }
 
     function updateMoneyReceived() public onlySellerBank {
-        if (compareStrings(status, "MoneyTrasnferred"))
-            status = "MoneyReceived";
-        LogStatusChange(status);
+        if (compareStrings(status, "MoneyTrasnferred")) {
+                status = "MoneyReceived";
+            LogStatusChange(status);
+        }
     }
 }
