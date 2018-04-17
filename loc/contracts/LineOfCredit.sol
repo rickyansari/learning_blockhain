@@ -71,7 +71,7 @@ contract LineOfCredit {
 
     function createSellerBank(address seller_bank_addresss) public onlySeller { 
         seller_bank = seller_bank_addresss;
-        LogStatusChange(status);
+        emit LogStatusChange(status);
     }
 
     function compareStrings (string a, string b) private pure returns (bool) {
@@ -81,12 +81,9 @@ contract LineOfCredit {
      
 
     function updateLocPresented() public onlyBuyer {
-        
         if (compareStrings(status, "LocCreated")) { 
             status = "LOCPresentedToSeller";
-            
-            LogStatusChange(status);         
-        
+            emit LogStatusChange(status);
         }      
     }
 
@@ -94,24 +91,22 @@ contract LineOfCredit {
         if (seller_bank != address(0)) {
             if (compareStrings(status, "LOCPresentedToSeller")) {
                 status = "LOCPresentedForValidation";
-                LogStatusChange(status);              
+                emit LogStatusChange(status);              
             }
-           
         }
-    
     }
 
     function updateValidated() public onlySellerBank {
         if (compareStrings(status, "LOCPresentedForValidation")) {
             status = "LOCValidated";
-            LogStatusChange(status);
+            emit LogStatusChange(status);
         }
     }
 
     function updateGoodsDispatched() public onlySeller {
         if (compareStrings(status, "LOCValidated")) {
             status = "GoodsDispatched";
-            LogStatusChange(status);
+            emit LogStatusChange(status);
         }
     }
 
@@ -124,28 +119,28 @@ contract LineOfCredit {
     function updateGoodsReceived() public onlyBuyer {
         if (compareStrings(status, "GoodsDispatched")) {
             status = "GoodsReceived";
-            LogStatusChange(status);
+            emit LogStatusChange(status);
         }
     }
 
     function updateMoneyTransferred() public onlyBuyerBank {
         if (compareStrings(status, "GoodsReceived")) {
             status = "MoneyTrasnferred";
-            LogStatusChange(status);
+            emit LogStatusChange(status);
         }
     }
 
     function setTransactionId(string transcid) public onlyBuyerBank {
-         if (compareStrings(status, "GoodsReceived")) {
+        if (compareStrings(status, "GoodsReceived")) {
             transactionId = transcid;
-            LogStatusChange(status);
-         }
+            emit LogStatusChange(status);
+        }
     }
 
     function updateMoneyReceived() public onlySellerBank {
         if (compareStrings(status, "MoneyTrasnferred")) {
-                status = "MoneyReceived";
-            LogStatusChange(status);
+            status = "MoneyReceived";
+            emit LogStatusChange(status);
         }
     }
 }
